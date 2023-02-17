@@ -26,6 +26,10 @@ After some quick researching, I start this small and quiet simple project, help 
 
 For the above reason, I also have another small project, [homecloud-baseos](https://github.com/a3linux/homecloud-baseos)
 
+### Deployment diagram
+
+![homecloud deploy diagram](docs/homecloud-docker-diagram.drawio.png)
+
 ## How to start
 
 ### Requirement
