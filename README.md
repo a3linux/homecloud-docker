@@ -16,7 +16,7 @@ A HomeCloud service stack uses docker-compose,  deploy home cloud service(s) qui
 
 ## Background
 
-I have my home cloud services(primary is Nextcloud) hosted on an Ubuntu box when I plan to migrate to docker based services, I found a lot of solutions, including Nextcloud All-in-one. But according to the situation, not all of them are matched the requirement. For example, I have so much history data, more than 15 years family data, always kept in multiple copies in HDD, multiple disks hold same data copies. And they are mounted to the Ubuntu server through USB and Network. Then I found it is not easy for me to migrate data or smooth boot docker based services with a new home server box.
+I have my home cloud services(primary is Nextcloud) hosted on an Ubuntu box when I plan to migrate to docker based services, I found a lot of solutions, including Nextcloud All-in-one. But according to the situation, not all of them match my requirements. For example, I have so much history data, more than 15 years family data, always kept in multiple copies in HDD, multiple disks hold same data copies. And they are mounted to the Ubuntu server through USB and Network. Then I found it is not easy for me to migrate data or smooth boot docker based services with a new home server box.
 
 After some quick researching, I start this small and quiet simple project, help to resolve the issue, dockerizing core services such as Nextcloud, authentication service with local file volumes. At the same time keep very simple base OS maintenance files and basic services. So that I have things here, 
 
