@@ -35,7 +35,7 @@ if [ -z "${TARGET_APP}" ]; then
 fi
 
 # Check container is running
-running_container=$(docker ps -a -f name=homecloud_nextcloudapp --format '{{.Name}}' 2>/dev/null | grep homecloud_nextcloudapp | head -n1)
+running_container=$(docker ps -a -f name=homecloud_nextcloudapp --format '{{.Names}}' 2>/dev/null | grep homecloud_nextcloudapp | head -n1)
 
 if [ "${running_container}" == "${NC_CONTAINER_NAME}" ]; then
     echo "Nextcloud app container is running"
@@ -54,42 +54,42 @@ case "${TARGET_APP}" in
         if [ -z "${NC_PORT}" ]; then
             NC_PORT=443
         fi
-        docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set loglevel --value=2
-        docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set log_type --value=file
-        docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set logfile --value="/var/www/html/data/nextcloud.log"
-        docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set log_rotate_size --value="10485760"
-        docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ app:enable admin_audit
-        docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:app:set admin_audit logfile --value="/var/www/html/data/audit.log"
-        docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set log.condition apps 0 --value="admin_audit"
+        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set loglevel --value=2
+        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set log_type --value=file
+        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set logfile --value="/var/www/html/data/nextcloud.log"
+        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set log_rotate_size --value="10485760"
+        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ app:enable admin_audit
+        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:app:set admin_audit logfile --value="/var/www/html/data/audit.log"
+        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set log.condition apps 0 --value="admin_audit"
 
         # Reverse proxy related settings
-        docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set trusted_domains 0 --value="${NC_DOMAIN}"
-        docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set overwrite.cli.url --value "https://${NC_DOMAIN}:${NC_PORT}"
-        docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set overwritehost --value "${NC_DOMAIN}:${NC_PORT}"
-        docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set overwriteprotocol --value "https"
-        docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set allow_local_remote_servers --value true --type bool
+        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set trusted_domains 0 --value="${NC_DOMAIN}"
+        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set overwrite.cli.url --value "https://${NC_DOMAIN}:${NC_PORT}"
+        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set overwritehost --value "${NC_DOMAIN}:${NC_PORT}"
+        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set overwriteprotocol --value "https"
+        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set allow_local_remote_servers --value true --type bool
 
         # trusted_proxies
-        docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set trusted_proxies 0 --value "172.16.0.0/12"
-        docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set trusted_proxies 1 --value "10.0.0.0/8"
-        docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set trusted_proxies 2 --value "192.168.0.0/16"
+        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set trusted_proxies 0 --value "172.16.0.0/12"
+        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set trusted_proxies 1 --value "10.0.0.0/8"
+        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set trusted_proxies 2 --value "192.168.0.0/16"
         # Set preview providers
-        docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set preview_max_x --value="2048"
-        docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set preview_max_y --value="2048"
-        docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set jpeg_quality --value="60"
-        docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:app:set preview jpeg_quality --value="60"
-        docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:delete enabledPreviewProviders
-        docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set enabledPreviewProviders 0 --value="OC\\Preview\\Imaginary"
-        docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set enabledPreviewProviders 1 --value="OC\\Preview\\Image"
-        docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set enabledPreviewProviders 2 --value="OC\\Preview\\MarkDown"
-        docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set enabledPreviewProviders 3 --value="OC\\Preview\\MP3"
-        docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set enabledPreviewProviders 4 --value="OC\\Preview\\TXT"
-        docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set enabledPreviewProviders 5 --value="OC\\Preview\\OpenDocument"
-        docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set enabledPreviewProviders 6 --value="OC\\Preview\\PDF"
-        docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set enabledPreviewProviders 7 --value="OC\\Preview\\HEIC"
-        #docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set enabledPreviewProviders 8 --value="OC\\Preview\\Movie"
-        docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set preview_imaginary_url --value="http://imaginary:9000"
-        docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set enable_previews --value=true --type=boolean
+        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set preview_max_x --value="2048"
+        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set preview_max_y --value="2048"
+        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set jpeg_quality --value="60"
+        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:app:set preview jpeg_quality --value="60"
+        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:delete enabledPreviewProviders
+        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set enabledPreviewProviders 0 --value="OC\\Preview\\Imaginary"
+        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set enabledPreviewProviders 1 --value="OC\\Preview\\Image"
+        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set enabledPreviewProviders 2 --value="OC\\Preview\\MarkDown"
+        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set enabledPreviewProviders 3 --value="OC\\Preview\\MP3"
+        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set enabledPreviewProviders 4 --value="OC\\Preview\\TXT"
+        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set enabledPreviewProviders 5 --value="OC\\Preview\\OpenDocument"
+        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set enabledPreviewProviders 6 --value="OC\\Preview\\PDF"
+        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set enabledPreviewProviders 7 --value="OC\\Preview\\HEIC"
+        #docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set enabledPreviewProviders 8 --value="OC\\Preview\\Movie"
+        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set preview_imaginary_url --value="http://imaginary:9000"
+        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set enable_previews --value=true --type=boolean
 
         ;;
     clamav)

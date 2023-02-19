@@ -55,23 +55,41 @@ For the data stores in base OS SSD disk, please keep them backup regularly.
 
 * BaseOS installed and setup
 * Clone this repository
-* Config the deployment config file, copy the _homecloud.env_ to homecloud.dev or homecloud.prod and put into folder according to your OS environment
-* Run ./sync_deployment.sh -c <path_to>/homecloud.<env>, here env is dev or prod you copied above
-* Go to service folder to start the service with start.dbonly.sh 
-* Create postgres database for Authentik and Nextcloud
-* Stop the service with stop.dbonly.sh
-* Start the service with start.sh and waiting for all service up
+* Config the deployment config file, copy the _homecloud.env_ to homecloud.dev or homecloud.prod and put into folder according to your OS environment, e.g. <some_path>/homecloud.dev
+* Run ./sync_deployment.sh -c <some_path>/homecloud.<env>, here env is dev or prod you copied above
+* Go to service folder to start the service with <some_path>/bin/start.dbonly.sh 
+* Create databases by run <some_apth>/bin/create_databases.sh
+* Stop the service with <some_path>/bin/stop.dbonly.sh
+* Start the service with <some_path>/bin/start.sh and waiting for all service up
 * First time setup
 
 ### Setup services
 
 #### Authentik
 
+Go to Authentik URL https://<AUTHENTIK_SERVER_NAME>/if/flow/initial-setup/, Authentik domain name should be the one in _homecloud_.<env>, setup the akadmin user.
+Start to use Authentik if everything is fine.
 
 #### Nextcloud
 
+Login into Nextcloud by URL https://<PRIMARY_SERVER_NAME>/.
 
-#### SSO for Nextcloud
+##### Well known issue about Nextcloud App Store json load issue
 
-There are good reference online for this part, [Complete Guide from Jack](https://blog.cubieserver.de/2022/complete-guide-to-nextcloud-saml-authentication-with-authentik/) and [Another guide](https://geekscircuit.com/nextcloud-saml-authentication-with-athentik/).
+WARN message in Nextcloud Administration -> Logging, 
+
+ ```
+     Could not connect to appstore: cURL error 28: Operation timed out after 60000 milliseconds with 421888 bytes received (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for https://apps.nextcloud.com/api/v1/apps.json
+ ```
+
+ Root cause of timeout, Nextcloud source code, lib/private/App/AppStore/Fetcher/Fetcher.php, line 103, $timeout => 60. I did not get reasonable solution for this. Just waiting for a while and lucky to have it.
+
+If your Nextcloud App Store is fine, then the script *config_nextcloud.sh* can be used for more Nextcloud configurations, including the Nextcloud Office(Collabora), Fulltextsearch and so forth. Use -h with the script to check more details. Anyway, all those settings can be done on Nextcloud management console too.
+
+#### Nextcloud SSO by Authentik
+
+There are good reference online for this part, 
+
+* [Complete Guide from Jack](https://blog.cubieserver.de/2022/complete-guide-to-nextcloud-saml-authentication-with-authentik/) 
+* [Another guide](https://geekscircuit.com/nextcloud-saml-authentication-with-athentik/).
 
