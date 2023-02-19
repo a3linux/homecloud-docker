@@ -2,6 +2,8 @@ homecloud-docker
 =========================
 
 A HomeCloud service stack uses docker-compose,  deploy home cloud service(s) quickly.
+This small project is directly from the thread here, 
+https://www.reddit.com/r/selfhosted/comments/103tbd3/comment/j95zp9b/?utm_source=share&utm_medium=web2x&context=3 
 
 ## Services include
 
