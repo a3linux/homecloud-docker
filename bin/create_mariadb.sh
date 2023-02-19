@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
-ROOT_SECRET_FILE=""
+VAULT_PATH=""
 DBNAME=""
 DBUSER=""
 DBCONTAINER=""
 
 usage() {
-    echo "Usage: $0 -n DATABASE_NAME -u DATABASE_USER -s ROOT_SECRET_FILE -d DATABASE_CONTAINER_NAME"
+    echo "Usage: $0 -n DATABASE_NAME -u DATABASE_USER -s VAULT_PATH -d DATABASE_CONTAINER_NAME"
     echo "  Create an MariaDB database with DATABASE_NAME and grant all permission to DATABASE_USER"
 }
 error_exit() {
@@ -24,7 +24,7 @@ do
             DBUSER=${OPTARG}
             ;;
         s)
-            ROOT_SECRET_FILE=${OPTARG}
+            VAULT_PATH=${OPTARG}
             ;;
         d)
             DBCONTAINER=${OPTARG}
@@ -37,12 +37,12 @@ do
 done
 shift $((OPTIND-1))
 
-if [ -z "${ROOT_SECRET_FILE}" ] || [ -z "${DBNAME}" ] || [ -z "${DBUSER}" ] || [ -z "${DBCONTAINER}" ]; then
+if [ -z "${VAULT_PATH}" ] || [ -z "${DBNAME}" ] || [ -z "${DBUSER}" ] || [ -z "${DBCONTAINER}" ]; then
     error_exit
 fi
 
 DBPASSWD_FILE="mariadb_${DBUSER}_password.txt"
-SECRET_FILE_PATH=$(dirname "${ROOT_SECRET_FILE}")
+ROOT_SECRET_FILE="${VAULT_PATH}/mariadb_root_password.txt"
 
 if [ -f "${ROOT_SECRET_FILE}" ]; then
     ROOT_PASSWD=$(cat "${ROOT_SECRET_FILE}")
@@ -51,10 +51,10 @@ else
     error_exit
 fi
 
-if [ -f "${SECRET_FILE_PATH}/${DBPASSWD_FILE}" ]; then
-    DBPASSWD=$(cat "${SECRET_FILE_PATH}"/"${DBPASSWD_FILE}")
+if [ -f "${VAULT_PATH}/${DBPASSWD_FILE}" ]; then
+    DBPASSWD=$(cat "${VAULT_PATH}"/"${DBPASSWD_FILE}")
 else
-    echo "${SECRET_FILE_PATH}/${DBPASSWD_FILE} not found, please add it first!!!"
+    echo "${VAULT_PATH}/${DBPASSWD_FILE} not found, please add it first!!!"
     error_exit
 fi
 

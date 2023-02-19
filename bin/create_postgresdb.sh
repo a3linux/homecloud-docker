@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
-
-SECRET_FILE_PATH=""
+# create_postgresdb.sh
+VAULT_PATH=""
 DBNAME=""
 DBUSER=""
 DBCONTAINER=""
 
 usage() {
-    echo "Usage: $0 -n DATABASE_NAME -u DATABASE_USER -s SECRET_FILE_PATH -d DATABASE_CONTAINER"
-    echo "  Create an MariaDB database with DATABASE_NAME and grant all permission to DATABASE_USER"
+    echo "Usage: $0 -n DATABASE_NAME -u DATABASE_USER -s VAULT_PATH -d DATABASE_CONTAINER_NAME"
+    echo "  Create an PostgreSQL database with DATABASE_NAME and grant all permission to DATABASE_USER"
+    echo "  At least the homecloud dbonly should start."
 }
 error_exit() {
     usage
@@ -24,7 +25,7 @@ do
             DBUSER=${OPTARG}
             ;;
         s)
-            SECRET_FILE_PATH=${OPTARG}
+            VAULT_PATH=${OPTARG}
             ;;
         d)
             DBCONTAINER=${OPTARG}
@@ -37,16 +38,16 @@ do
 done
 shift $((OPTIND-1))
 
-if [ -z "${SECRET_FILE_PATH}" ] || [ -z "${DBNAME}" ] || [ -z "${DBUSER}" ] || [ -z "${DBCONTAINER}" ]; then
+if [ -z "${VAULT_PATH}" ] || [ -z "${DBNAME}" ] || [ -z "${DBUSER}" ] || [ -z "${DBCONTAINER}" ]; then
     error_exit
 fi
 
 DBPASSWD_FILE="postgres_${DBUSER}_password.txt"
 
-if [ -f "${SECRET_FILE_PATH}/${DBPASSWD_FILE}" ]; then
-    DBPASSWD=$(cat "${SECRET_FILE_PATH}/${DBPASSWD_FILE}")
+if [ -f "${VAULT_PATH}/${DBPASSWD_FILE}" ]; then
+    DBPASSWD=$(cat "${VAULT_PATH}/${DBPASSWD_FILE}")
 else
-    echo "${SECRET_FILE_PATH}/${DBPASSWD_FILE} not found, please add it first"
+    echo "${VAULT_PATH}/${DBPASSWD_FILE} not found, please add it first"
     error_exit
 fi
 

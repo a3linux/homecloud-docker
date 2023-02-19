@@ -293,4 +293,21 @@ echo "${HC_DC_BIN_PATH}/homecloud-service.sh -c ${SERVICE_DESTINATION}/${SETUP_E
 chmod +x "${DC_START}" "${DC_STOP}" "${DC_START_DAEMON}" "${DC_START_DBONLY}" "${DC_STOP_DBONLY}"
 echo ""
 
+# Generate create_databases.sh
+echo "Generate create_databases.sh for first time setup."
+CREATE_DATABASES="${HC_DC_BIN_PATH}/create_databases.sh"
+CREATE_POSTGRES="${HC_DC_BIN_PATH}/create_postgresdb.sh"
+CREATE_MARIADB="${HC_DC_BIN_PATH}/create_mariadb.sh"
+
+echo "#!/usr/bin/env bash" > "${CREATE_DATABASES}"
+if [ -x "${CREATE_POSTGRES}" ]; then
+    echo "${CREATE_POSTGRES} -n authentik -u authentik -s ${VAULT_BASE} -d homecloud_postgres"  >> "${CREATE_DATABASES}"
+    echo "${CREATE_POSTGRES} -n nextcloud -u nextcloud -s ${VAULT_BASE} -d homecloud_postgres" >> "${CREATE_DATABASES}"
+fi
+
+if [ -x "${CREATE_MARIADB}" ]; then
+    echo
+fi
+chmod +x "${CREATE_DATABASES}"
+
 echo "Prepare deployment environment ${TARGET_ENV} Done!"

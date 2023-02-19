@@ -23,7 +23,7 @@ error_exit() {
 
 while getopts "f::c:a:vdbth" arg
 do
-    case ${arg} ina
+    case ${arg} in
         f)
             ADDITONAL_COMPOSE_FILE=${OPTARG}
             ;;
