@@ -3,7 +3,8 @@ NC_CONTAINER_NAME="homecloud_nextcloudapp"
 usage() {
     echo "Usage: $0 -a APP"
     echo "  APP can be, "
-    echo "    nextcloud      -  system and global level configurations set"
+    echo "    nextcloud      -  system and global level configurations set,"
+    echo "       please set environment NC_DOMAIN and NC_PORT with nextcloud DNS name and server port to filful the settings, e.g. export NC_DOMAIN=nc.sample.com NC_PORT=443(default one), for local or development environment, the NC_PORT might not be 443, please set it if so."
     echo "    clamav         -  clamav configuration set"
     echo "    code           -  Nextcloud(Collabora) office related set, please set the environment WOPI_URL(code server URL) and CODE_SERVER_IP(server IP) to finish the Nextcloud Office settings"
     echo "    fulltextsearch -  fulltextsearch configuration set"
@@ -46,6 +47,13 @@ fi
 case "${TARGET_APP}" in
     nextcloud)
         # Basic settings
+        if [ -z "${NC_DOMAIN}" ]; then
+            echo "No NC_DOMAIN set!"
+            error_exit
+        fi
+        if [ -z "${NC_PORT}" ]; then
+            NC_PORT=443
+        fi
         docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set loglevel --value=2
         docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set log_type --value=file
         docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set logfile --value="/var/www/html/data/nextcloud.log"
@@ -55,9 +63,9 @@ case "${TARGET_APP}" in
         docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set log.condition apps 0 --value="admin_audit"
 
         # Reverse proxy related settings
-        docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set trusted_domains 0 --value="${PRIMARY_SERVER_NAME}"
-        docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set overwrite.cli.url --value "https://${PRIMARY_SERVER_NAME}:${HTTPS_PORT}"
-        docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set overwritehost --value "${PRIMARY_SERVER_NAME}:${HTTPS_PORT}"
+        docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set trusted_domains 0 --value="${NC_DOMAIN}"
+        docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set overwrite.cli.url --value "https://${NC_DOMAIN}:${NC_PORT}"
+        docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set overwritehost --value "${NC_DOMAIN}:${NC_PORT}"
         docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set overwriteprotocol --value "https"
         docker exec -i -u www-data "${NEXTCLOUD_CONTAINER_NAME}" php /var/www/html/occ config:system:set allow_local_remote_servers --value true --type bool
 
