@@ -43,7 +43,7 @@ services:
   mariadb:
     container_name: homecloud_mariadb
     profiles: ["dev", "prod", "dbonly"]
-    image: mariadb
+    image: mariadb:10
     restart: unless-stopped
     deploy:
       resources:
@@ -62,7 +62,7 @@ services:
   postgres:
     container_name: homecloud_postgres
     profiles: ["dev", "prod", "dbonly"]
-    image: postgres
+    image: postgres:15-alpine
     restart: unless-stopped
     secrets:
       - postgres_psql_password

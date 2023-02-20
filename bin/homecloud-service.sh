@@ -7,7 +7,7 @@ usage() {
     echo "  Please provide the homecloud service environment file, e.g. some_path/homecloud.dev"
     echo "  You COULD create such file based on templates/homecloud.env.template"
     echo "  The filename should be homecloud.<env>, <env> indicates the deployment, can be dev | prod"
-    echo "  -a <action>  start | stop | restart"
+    echo "  -a <action>  start | stop | restart | pull"
     echo "  -b Database Only Docker-compose profile applied"
     echo "  -v Append clamav profile"
     echo "  -t Append talk profile"
@@ -32,8 +32,8 @@ do
             ;;
         a)
             ACTION=${OPTARG}
-            if  [ "${ACTION}" != "start" ] && [ "${ACTION}" != "stop" ] && [ "${ACTION}" != "restart" ]; then
-                echo "Action can be ONLY start | stop | restart"
+            if  [ "${ACTION}" != "start" ] && [ "${ACTION}" != "stop" ] && [ "${ACTION}" != "restart" ] && [ "${ACTION}" != "pull" ]; then
+                echo "Action can be ONLY start | stop | restart | pull"
                 error_exit
             fi
             ;;
@@ -93,6 +93,9 @@ case "${ACTION}" in
     stop)
             docker compose -f ${SERVICE_DESTINATION}/docker-compose.yml -f ${SERVICE_DESTINATION}/docker-compose.${TARGET_ENV}.yml ${PROFILES} down
         ;;
+    pull)
+            docker compose -f ${SERVICE_DESTINATION}/docker-compose.yml -f ${SERVICE_DESTINATION}/docker-compose.${TARGET_ENV}.yml ${PROFILES} pull
+            ;;
     *)
         error_exit
         ;;
