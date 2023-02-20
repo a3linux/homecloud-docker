@@ -166,6 +166,10 @@ echo "Generate Redis docker-compose config."
 echo ""
 
 echo "Generate Authentik configurations."
+AUTHENTIK_ENV_TEMPLATE="${HC_PROGRAM_PATH}"/env_files/authentik.env
+AUTHENTIK_ENV_FILE="${SERVICE_DESTINATION}"/authentik.${TARGET_ENV}
+echo "  Copy and update env file code.${TARGET_ENV}"
+cp -v "${AUTHENTIK_ENV_TEMPLATE}" "${AUTHENTIK_ENV_FILE}"
 # Authentik Server
 mkdir -p "${APPS_BASE}"/authentik/media "${APPS_BASE}"/authentik/templates "${APPS_BASE}"/authentik/data "${APPS_BASE}"/authentik/certs
 echo "  Sync up config files."
@@ -175,6 +179,17 @@ sed -i '' "s|%AUTHENTIK_SERVER_NAME%|${AUTHENTIK_SERVER_NAME}|g" "${APPS_BASE}/a
 sed -i '' "s|%HTTPS_PORT%|${HTTPS_PORT}|g" "${APPS_BASE}/authentik/data/user_settings.py"
 
 echo "  Generate authentik server(app) docker-compose config."
+if [ "${AUTHENTIK_ENV_FILE_ENABLED}" == "yes" ]; then
+{
+    printf "\n";
+    printf "  authentikapp:\n";
+    printf "    env_file: authentik.%s\n" "${TARGET_ENV}"
+    printf "    volumes:\n";
+    printf "      - %s:/media\n" "${APPS_BASE}/authentik/media";
+    printf "      - %s:/templates\n" "${APPS_BASE}/authentik/templates";
+    printf "      - %s:/data/user_settings.py\n" "${APPS_BASE}/authentik/data/user_settings.py";
+} >> "${HC_DC_ENV_FILE}"
+else
 {
     printf "\n";
     printf "  authentikapp:\n";
@@ -183,10 +198,23 @@ echo "  Generate authentik server(app) docker-compose config."
     printf "      - %s:/templates\n" "${APPS_BASE}/authentik/templates";
     printf "      - %s:/data/user_settings.py\n" "${APPS_BASE}/authentik/data/user_settings.py";
 } >> "${HC_DC_ENV_FILE}"
+fi
 echo ""
 
 echo "  Generate authentik worker docker-compose config."
 # Authentikworker
+if [ "${AUTHENTIK_ENV_FILE_ENABLED}" == "yes" ]; then
+{
+    printf "\n";
+    printf "  authentikworker:\n";
+    printf "    env_file: authentik.%s\n" "${TARGET_ENV}"
+    printf "    volumes:\n";
+    printf "      - %s:/media\n" "${APPS_BASE}/authentik/media";
+    printf "      - %s:/certs\n" "${APPS_BASE}/authentik/certs";
+    printf "      - %s:/templates\n" "${APPS_BASE}/authentik/templates";
+    printf "      - %s:/data/user_settings.py\n" "${APPS_BASE}/authentik/data/user_settings.py";
+} >> "${HC_DC_ENV_FILE}"
+else
 {
     printf "\n";
     printf "  authentikworker:\n";
@@ -196,6 +224,7 @@ echo "  Generate authentik worker docker-compose config."
     printf "      - %s:/templates\n" "${APPS_BASE}/authentik/templates";
     printf "      - %s:/data/user_settings.py\n" "${APPS_BASE}/authentik/data/user_settings.py";
 } >> "${HC_DC_ENV_FILE}"
+fi
 echo ""
 
 echo "Generate nextcloud app docker-compose config."
@@ -234,7 +263,7 @@ echo ""
 
 # Populate docker container environment variables
 echo "Generate CODE configurations."
-CODE_ENV_TEMPLATE="${HC_PROGRAM_PATH}"/templates/code.env.template
+CODE_ENV_TEMPLATE="${HC_PROGRAM_PATH}"/env_files/code.env
 CODE_ENV_FILE="${SERVICE_DESTINATION}"/code.${TARGET_ENV}
 echo "  Copy and update env file code.${TARGET_ENV}"
 cp -v "${CODE_ENV_TEMPLATE}" "${CODE_ENV_FILE}"
@@ -242,6 +271,8 @@ sed -i '' "s|%PRIMARY_SERVER_NAME%|${PRIMARY_SERVER_NAME}|g" "${CODE_ENV_FILE}"
 sed -i '' "s|%HTTPS_PORT%|${HTTPS_PORT}|g" "${CODE_ENV_FILE}"
 echo "  Generate CODE docker-compose config"
 mkdir -p "${APPS_BASE}"/code/fonts
+
+if [ "${CODE_ENV_FILE_ENABLED}" == "yes" ]; then
 {
     printf "\n";
     printf "  code:\n";
@@ -249,6 +280,14 @@ mkdir -p "${APPS_BASE}"/code/fonts
     printf "    volumes:\n";
     printf "      - %s:/opt/cool/systemplate/tmpfonts:rw\n" "${APPS_BASE}/code/fonts";
 } >> "${HC_DC_ENV_FILE}"
+else
+{
+    printf "\n";
+    printf "  code:\n";
+    printf "    volumes:\n";
+    printf "      - %s:/opt/cool/systemplate/tmpfonts:rw\n" "${APPS_BASE}/code/fonts";
+} >> "${HC_DC_ENV_FILE}"
+fi
 echo ""
 
 # clamav
