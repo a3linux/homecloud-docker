@@ -32,7 +32,7 @@ do
             ;;
         a)
             ACTION=${OPTARG}
-            if  [ "${ACTION}" != "start" ] && [ "${ACTION}" != "stop" ] && [ "${ACTOIN}" != "restart" ]; then
+            if  [ "${ACTION}" != "start" ] && [ "${ACTION}" != "stop" ] && [ "${ACTION}" != "restart" ]; then
                 echo "Action can be ONLY start | stop | restart"
                 error_exit
             fi
