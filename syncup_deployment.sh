@@ -60,6 +60,8 @@ clamav
 elasticsearch
 "
 DATAs="
+mariadb
+postgres
 nextcloud
 "
 DSTs="
@@ -83,7 +85,8 @@ do
 done
 
 mkdir -p "${VAULT_BASE}"
-# Source path
+
+# myself path
 mypath=$(realpath "${BASH_SOURCE:-$0}")
 MYSELF_PATH=$(dirname "${mypath}")
 HC_PROGRAM_PATH="${MYSELF_PATH%%\/bin}"
@@ -91,14 +94,15 @@ HC_CONF_SOURCE_PATH="${HC_PROGRAM_PATH}"/conf
 
 echo "Copy scripts and data"
 if [ ! -f "${SERVICE_DESTINATION}"/"${SETUP_ENV_FILENAME}" ]; then
+    # if the setup file is not in destination folder, copy it
     cp -v "${SETUP_ENV_FULLPATH}" "${SERVICE_DESTINATION}"/"${SETUP_ENV_FILENAME}"
 fi
 HC_DC_BIN_PATH="${SERVICE_DESTINATION}"/bin
 rsync -ar "${HC_PROGRAM_PATH}"/bin/ "${HC_DC_BIN_PATH}"/
 HC_DC_ETC_PATH="${SERVICE_DESTINATION}"/etc
 rsync -ar "${HC_PROGRAM_PATH}"/etc/ "${HC_DC_ETC_PATH}"/
-HC_DC_ENV_FILE="${SERVICE_DESTINATION}"/docker-compose.${TARGET_ENV}.yml
 cp -v "${HC_PROGRAM_PATH}"/docker-compose.yml "${SERVICE_DESTINATION}"/
+HC_DC_ENV_FILE="${SERVICE_DESTINATION}"/docker-compose.${TARGET_ENV}.yml
 
 # Setup LB config files
 echo "Populate LB configurations ..."
@@ -110,15 +114,21 @@ PRIMARY_CERT_PATH=/certs/${PRIMARY_CERT_FILE:=fullchain.pem}
 PRIMARY_PRIVATE_KEY_PATH=/certs/${PRIMARY_PRIVATE_KEY_FILE:=private.pem}
 AUTHENTIK_CERT_PATH=/certs/${AUTHENTIK_CERT_FILE:=fullchain.pem}
 AUTHENTIK_PRIVATE_KEY_PATH=/certs/${AUTHENTIK_PRIVATE_KEY_FILE:=private.pem}
+CODE_CERT_PATH=/certs/${PRIMARY_CERT_FILE:=fullchain.pem}
+CODE_PRIVATE_KEY_PATH=/certs/${PRIMARY_PRIVATE_KEY_FILE:=private.pem}
 
 echo "  Update config files."
 for conf in "${APPS_BASE}"/lb/conf.d/*.conf
 do
-    for find_to_replace in PRIMARY_SERVER_NAME AUTHENTIK_SERVER_NAME PRIMARY_CERT_PATH AUTHENTIK_CERT_PATH PRIMARY_PRIVATE_KEY_PATH AUTHENTIK_PRIVATE_KEY_PATH HTTPS_PORT
+    for find_to_replace in PRIMARY_SERVER_NAME AUTHENTIK_SERVER_NAME PRIMARY_CERT_PATH AUTHENTIK_CERT_PATH PRIMARY_PRIVATE_KEY_PATH AUTHENTIK_PRIVATE_KEY_PATH HTTPS_PORT CODE_CERT_PATH CODE_PRIVATE_KEY_PATH
     do
         sed -i '' "s|%${find_to_replace}%|${!find_to_replace}|g" "${conf}"
     done
 done
+if [ "${CODE_SERVER_ENABLED}" != "yes" ]; then
+    # There might be no code container running
+    rm -f "${APPS_BASE}"/lb/conf.d/*-code.conf
+fi
 
 echo "  Generate lb docker-compose config."
 # Generate the docker-compose.<env>.yml
@@ -168,10 +178,10 @@ echo ""
 echo "Generate Authentik configurations."
 AUTHENTIK_ENV_TEMPLATE="${HC_PROGRAM_PATH}"/env_files/authentik.env
 AUTHENTIK_ENV_FILE="${SERVICE_DESTINATION}"/authentik.${TARGET_ENV}
-echo "  Copy and update env file code.${TARGET_ENV}"
+echo "  Copy and update env file authentik.${TARGET_ENV}"
 cp -v "${AUTHENTIK_ENV_TEMPLATE}" "${AUTHENTIK_ENV_FILE}"
 # Authentik Server
-mkdir -p "${APPS_BASE}"/authentik/media "${APPS_BASE}"/authentik/templates "${APPS_BASE}"/authentik/data "${APPS_BASE}"/authentik/certs
+mkdir -p "${APPS_BASE}"/authentik/media "${APPS_BASE}"/authentik/templates "${APPS_BASE}"/authentik/data "${APPS_BASE}"/authentik/certs "${APPS_BASE}"/authentik/dist/extra
 echo "  Sync up config files."
 rsync -ar "${HC_CONF_SOURCE_PATH}"/authentik/ "${APPS_BASE}"/authentik/
 sed -i '' "s|%PRIMARY_SERVER_NAME%|${PRIMARY_SERVER_NAME}|g" "${APPS_BASE}/authentik/data/user_settings.py"
@@ -187,8 +197,10 @@ if [ "${AUTHENTIK_ENV_FILE_ENABLED}" == "yes" ]; then
     printf "    volumes:\n";
     printf "      - %s:/media\n" "${APPS_BASE}/authentik/media";
     printf "      - %s:/templates\n" "${APPS_BASE}/authentik/templates";
-    printf "      - %s:/data/user_settings.py\n" "${APPS_BASE}/authentik/data/user_settings.py";
+    printf "      - %s:/web/dist/extra:ro\n" "${APPS_BASE}/authentik/dist/extra";
+    printf "      - %s:/data/user_settings.py:ro\n" "${APPS_BASE}/authentik/data/user_settings.py";
 } >> "${HC_DC_ENV_FILE}"
+    #printf "      - %s:/web/dist/custom.css:ro\n" "${APPS_BASE}/authentik/dist/custom.css";
 else
 {
     printf "\n";
@@ -196,7 +208,8 @@ else
     printf "    volumes:\n";
     printf "      - %s:/media\n" "${APPS_BASE}/authentik/media";
     printf "      - %s:/templates\n" "${APPS_BASE}/authentik/templates";
-    printf "      - %s:/data/user_settings.py\n" "${APPS_BASE}/authentik/data/user_settings.py";
+    printf "      - %s:/web/dist/extra:ro\n" "${APPS_BASE}/authentik/dist/extra";
+    printf "      - %s:/data/user_settings.py:ro\n" "${APPS_BASE}/authentik/data/user_settings.py";
 } >> "${HC_DC_ENV_FILE}"
 fi
 echo ""
@@ -272,18 +285,11 @@ sed -i '' "s|%HTTPS_PORT%|${HTTPS_PORT}|g" "${CODE_ENV_FILE}"
 echo "  Generate CODE docker-compose config"
 mkdir -p "${APPS_BASE}"/code/fonts
 
-if [ "${CODE_ENV_FILE_ENABLED}" == "yes" ]; then
+if [ "${CODE_SERVER_ENABLED}" == "yes" ]; then
 {
     printf "\n";
     printf "  code:\n";
     printf "    env_file: code.%s\n" "${TARGET_ENV}";
-    printf "    volumes:\n";
-    printf "      - %s:/opt/cool/systemplate/tmpfonts:rw\n" "${APPS_BASE}/code/fonts";
-} >> "${HC_DC_ENV_FILE}"
-else
-{
-    printf "\n";
-    printf "  code:\n";
     printf "    volumes:\n";
     printf "      - %s:/opt/cool/systemplate/tmpfonts:rw\n" "${APPS_BASE}/code/fonts";
 } >> "${HC_DC_ENV_FILE}"

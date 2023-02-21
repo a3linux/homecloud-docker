@@ -247,7 +247,7 @@ services:
 
   code:
     container_name: homecloud_code
-    profiles: ["dev", "prod"]
+    profiles: ['code']
     image: collabora/code
     restart: unless-stopped
     expose:

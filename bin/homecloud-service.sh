@@ -3,14 +3,12 @@ SETUP_ENV_FULLPATH=""
 PROFILES=""
 ADDITONAL_COMPOSE_FILE=""
 usage() {
-    echo "Usage: $0 -c some_path/homecloud.<env> -a <action> -f <additional_compose.yml> -b -c -t -d"
+    echo "Usage: $0 -c some_path/homecloud.<env> -a <action> -f <additional_compose.yml> -b -c -t -d -o"
     echo "  Please provide the homecloud service environment file, e.g. some_path/homecloud.dev"
     echo "  You COULD create such file based on templates/homecloud.env.template"
     echo "  The filename should be homecloud.<env>, <env> indicates the deployment, can be dev | prod"
     echo "  -a <action>  start | stop | restart | pull"
     echo "  -b Database Only Docker-compose profile applied"
-    echo "  -v Append clamav profile"
-    echo "  -t Append talk profile"
     echo "  -d Deattach mode"
     echo "  -f additional docker-compose yml file, MUST be in service folder"
     echo "  -h Display this message"
@@ -21,7 +19,7 @@ error_exit() {
     exit 1
 }
 
-while getopts "f::c:a:vdbth" arg
+while getopts "f::c:a:bdh" arg
 do
     case ${arg} in
         f)
@@ -39,12 +37,6 @@ do
             ;;
         d)
             IS_DEATTACHED="yes"
-            ;;
-        v)
-            PROFILES=" ${PROFILES} --profile clamav "
-            ;;
-        t)
-            PROFILES=" ${PROFILES} --profile talk "
             ;;
         b)
             IS_DBONLY="yes"
@@ -73,6 +65,18 @@ if [ "${IS_DBONLY}" == "yes" ]; then
     PROFILES=" --profile dbonly "
 else
     PROFILES=" ${PROFILES} --profile ${TARGET_ENV}"
+fi
+
+if [ "$CODE_SERVER_ENABLED" == "yes" ]; then
+    PROFILES=" ${PROFILES} --profile code "
+fi
+
+if [ "$TALK_SERVER_ENABLED" == "yes" ]; then
+    PROFILES=" ${PROFILES} --profile talk "
+fi
+
+if [ "$CLAMAV_SERVER_ENABLED" == "yes" ]; then
+    PROFILES=" ${PROFILES} --profile clamav "
 fi
 
 if [ ! -z "${ADDITONAL_COMPOSE_FILE}" ]; then
