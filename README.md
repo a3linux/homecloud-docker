@@ -36,13 +36,12 @@ After some quick researching, I start this small and quiet simple project, help 
 
 * Ubuntu Server or Desktop >= 22.04 LTS
 
-Install Ubuntu Server (>= 22.04), run the setup script,
+* Clone this repository
 
+After install Ubuntu Server (>= 22.04) and clone the repository, run the setup script,
 ```
 $ bin/setup.ubuntu.sh
 ```
-
-* Clone this repository
 
 Then you might need more,
 
@@ -124,6 +123,7 @@ acme.sh supports so many different modes to issue certificate. Go to [Here](http
 ### Initialize the service
 
 * BaseOS installed and setup
+* HTTPS certificate generated or obtained, if not, please check above steps
 * Config the deployment config file, copy the _homecloud.env_ to homecloud.dev or homecloud.prod and put into folder according to your OS environment, e.g. <some_path>/homecloud.dev
 * Run ./sync_deployment.sh -c <some_path>/homecloud.<env>, here env is dev or prod you copied above
 * Go to service folder to start the service with <some_path>/bin/start.dbonly.sh 
