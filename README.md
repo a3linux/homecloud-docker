@@ -16,15 +16,13 @@ This small project is directly from the thread [here](https://www.reddit.com/r/s
 
 ## Background and design
 
-I have my home cloud services(primary is Nextcloud) hosted on an Ubuntu box when I plan to migrate to docker based services, I found a lot of solutions, including Nextcloud All-in-one. But according to the situation, not all of them match my requirements. For example, I have so much history data, more than 15 years family data, always kept in multiple copies in HDD, multiple disks hold same data copies. And they are mounted to the Ubuntu server through USB and Network. Then I found it is not easy for me to migrate data or smooth boot docker based services with a new home server box.
+I have my home cloud services(primary is Nextcloud) hosted on an Ubuntu box when I plan to migrate to docker based services, I found a lot of solutions, including Nextcloud All-in-one. But according to the situation, not all of them match my requirements. For example, I have more than 15 years history data(>1TB), always kept in multiple copies in HDD, multiple disks hold the backup copies. All the disks are mounted to the Ubuntu server by USB or NAS. Then I found it is not easy for me to migrate data smoothly with docker based solution.
 
-After some quick researching, I start this small and quiet simple project, help to resolve the issue, dockerizing core services such as Nextcloud, authentication service with local file volumes. At the same time keep very simple base OS maintenance files and basic services. So that I have things here, 
+After some quick researching, I start this small and quiet simple project, help to resolve the issue, convert core services to docker, keep data in local volumes(HDD), at the same time, keep the base os node simple to replace or fix.
 
-* Docker server as computing node _ONLY_ and de-attached from the data, the node can be replaced at any time if broken
-* Base OS(Ubuntu run on the node) as the housekeeper, takes over the disk management, files backup, network/firewall and Docker platform
-* All data keep in HDD with multiple copies as usually, no data dump or export / import to Docker containers, my disks remained in external USB box or small NAS servers
-
-For the above reason, I also have another small project, [homecloud-baseos](https://github.com/a3linux/homecloud-baseos)
+* Docker server run as computing node _ONLY_ . It is de-attached with data volumes. The box itself can be replaced quick and easy when broken
+* Base OS(Ubuntu run on the node) can be setup quickly with disk volumes management(mounts), files backup and restore, network/firewall, also the Docker-CE environment
+* All data keep in HDDs(USB and NAS) with multiple copies as usually, no data dump or export/import to Docker containers, my disks remained in external USB box or small NAS servers
 
 ### Deployment diagram
 
@@ -32,21 +30,28 @@ For the above reason, I also have another small project, [homecloud-baseos](http
 
 ## Preparation and requirements
 
-**First of all, please clone this git repository to the machine**
-
 ### Requirements
 
-Before start, please confirm the OS environment has essential parts, 
-
 * Recommend hardware >2.0GHz multiple cores CPU and >8GB memory
-* Ubuntu 22.04 LTS server
-* Docker-ce
 
-And you might need,
+* Ubuntu Server or Desktop >= 22.04 LTS
+
+Install Ubuntu Server (>= 22.04), run the setup script,
+
+```
+$ bin/setup.ubuntu.sh
+```
+
+* Clone this repository
+
+Then you might need more,
 
 * DNS Names, at least you need two, one for primary service as Nextcloud, the other for Authentication service(Authentik), e.g www.example.com and auth.example.com
 
-* Multiple volumes or paths to mount with Docker, at least you need 4
+* Multiple volumes or folders to mount with Docker, at least you need 4. 
+
+For test purpose, all of them can be in one disk or even in one parent folder(*ONLY FOR TEST, NOT RECOMMEND FOR REAL WORLD*),
+
     1. SERVICE_DESTINATION - Service destination, the homecloud service files will store there, recommend to keep in OS SSD disk
     2. APPS_BASE - Application data volumes, recommend to keep in OS SSD disk
     3. DATA_BASE - User data, recommend to keep in HDD, this is the volume what Nextcloud used for service user files storage
@@ -55,18 +60,9 @@ And you might need,
 For other HDD volumes, if you have, like me, used as backup, please feel free to mount or use them in base OS, docker services will NOT touch them.
 For the data stores in base OS SSD disk, please keep them backup regularly.
 
-
-### Preparation the Base OS
-
-Install Ubuntu Server (>= 22.04), run the setup script,
-
-```
-$ bin/setup.ubuntu.sh
-```
-
 ### HTTPS certificates and acme.sh
 
-**If free HTTPS certificate**, if you have commercial certificates, please ignore this.
+**acme.sh is for free HTTPS certificate**, if you have commercial certificates, please ignore this.
 
 acme.sh for free SSL certificate request and renew, keep it in base OS might be easy then in Docker and keep it out of scope the docker chain can make the docker chain more clean and easy for local development and debug.
 
