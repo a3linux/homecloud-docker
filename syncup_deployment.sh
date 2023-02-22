@@ -197,10 +197,8 @@ if [ "${AUTHENTIK_ENV_FILE_ENABLED}" == "yes" ]; then
     printf "    volumes:\n";
     printf "      - %s:/media\n" "${APPS_BASE}/authentik/media";
     printf "      - %s:/templates\n" "${APPS_BASE}/authentik/templates";
-    printf "      - %s:/web/dist/extra:ro\n" "${APPS_BASE}/authentik/dist/extra";
     printf "      - %s:/data/user_settings.py:ro\n" "${APPS_BASE}/authentik/data/user_settings.py";
 } >> "${HC_DC_ENV_FILE}"
-    #printf "      - %s:/web/dist/custom.css:ro\n" "${APPS_BASE}/authentik/dist/custom.css";
 else
 {
     printf "\n";
@@ -208,10 +206,11 @@ else
     printf "    volumes:\n";
     printf "      - %s:/media\n" "${APPS_BASE}/authentik/media";
     printf "      - %s:/templates\n" "${APPS_BASE}/authentik/templates";
-    printf "      - %s:/web/dist/extra:ro\n" "${APPS_BASE}/authentik/dist/extra";
     printf "      - %s:/data/user_settings.py:ro\n" "${APPS_BASE}/authentik/data/user_settings.py";
 } >> "${HC_DC_ENV_FILE}"
 fi
+    #printf "      - %s:/web/dist/custom.css:ro\n" "${APPS_BASE}/authentik/dist/custom.css";
+    #printf "      - %s:/web/dist/extra:ro\n" "${APPS_BASE}/authentik/dist/extra";
 echo ""
 
 echo "  Generate authentik worker docker-compose config."
