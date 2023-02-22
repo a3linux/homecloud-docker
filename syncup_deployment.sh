@@ -101,6 +101,7 @@ HC_DC_BIN_PATH="${SERVICE_DESTINATION}"/bin
 rsync -ar "${HC_PROGRAM_PATH}"/bin/ "${HC_DC_BIN_PATH}"/
 HC_DC_ETC_PATH="${SERVICE_DESTINATION}"/etc
 rsync -ar "${HC_PROGRAM_PATH}"/etc/ "${HC_DC_ETC_PATH}"/
+sed -i '' "s|%SERVICE_DESTINATION%|${SERVICE_DESTINATION}|g" "${HC_DC_ETC_PATH}"/systemd/system/multi-user.target.wants/homecloud.service
 cp -v "${HC_PROGRAM_PATH}"/docker-compose.yml "${SERVICE_DESTINATION}"/
 HC_DC_ENV_FILE="${SERVICE_DESTINATION}"/docker-compose.${TARGET_ENV}.yml
 

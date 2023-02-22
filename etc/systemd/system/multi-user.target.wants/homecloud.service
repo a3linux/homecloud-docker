@@ -1,0 +1,14 @@
+[Unit]
+Description=HomeCloud Service
+PartOf=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=true
+WorkingDirectory=%SERVICE_DESTINATION%
+ExecStart=%SERVICE_DESTINATION%/bin/start.daemon.sh
+ExecStop=%SERVICE_DESTINATION%/bin/stop.sh
+
+[Install]
+WantedBy=multi-user.target
