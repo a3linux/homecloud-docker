@@ -1,9 +1,7 @@
 homecloud-docker
 =========================
-
 A HomeCloud service stack uses docker-compose,  deploy home cloud service(s) quickly.
-This small project is directly from the thread here, 
-https://www.reddit.com/r/selfhosted/comments/103tbd3/comment/j95zp9b/?utm_source=share&utm_medium=web2x&context=3 
+This small project is directly from the thread [here](https://www.reddit.com/r/selfhosted/comments/103tbd3/comment/j95zp9b/?utm_source=share&utm_medium=web2x&context=3 )
 
 ## Services include
 
@@ -16,7 +14,7 @@ https://www.reddit.com/r/selfhosted/comments/103tbd3/comment/j95zp9b/?utm_source
 * ClamAV(disabled by default)
 * Nextcloud talk(disabled by default)
 
-## Background
+## Background and design
 
 I have my home cloud services(primary is Nextcloud) hosted on an Ubuntu box when I plan to migrate to docker based services, I found a lot of solutions, including Nextcloud All-in-one. But according to the situation, not all of them match my requirements. For example, I have so much history data, more than 15 years family data, always kept in multiple copies in HDD, multiple disks hold same data copies. And they are mounted to the Ubuntu server through USB and Network. Then I found it is not easy for me to migrate data or smooth boot docker based services with a new home server box.
 
@@ -32,13 +30,19 @@ For the above reason, I also have another small project, [homecloud-baseos](http
 
 ![homecloud deploy diagram](docs/homecloud-docker-diagram.drawio.png)
 
-## How to start
+## Preparation and requirements
 
-### Requirement
+**First of all, please clone this git repository to the machine**
+
+### Requirements
 
 Before start, please confirm the OS environment has essential parts, 
 
-* Actually, you MUST have Docker-CE installed with compose, [Install Docker on ubuntu](https://docs.docker.com/engine/install/ubuntu/) might be helpful.
+* Recommend hardware >2.0GHz multiple cores CPU and >8GB memory
+* Ubuntu 22.04 LTS server
+* Docker-ce
+
+And you might need,
 
 * DNS Names, at least you need two, one for primary service as Nextcloud, the other for Authentication service(Authentik), e.g www.example.com and auth.example.com
 
@@ -51,19 +55,85 @@ Before start, please confirm the OS environment has essential parts,
 For other HDD volumes, if you have, like me, used as backup, please feel free to mount or use them in base OS, docker services will NOT touch them.
 For the data stores in base OS SSD disk, please keep them backup regularly.
 
-* You will need HTTPS certificate files either self signed one for testing or Letsencrypt any other one. I did not integrate this part into docker as I found there are multiple services now, ACME supports at least two free services, at the same time, lot of people, like myself, still use traditional certbot with let'sencrypt.
 
-### Quick start
+### Preparation the Base OS
+
+Install Ubuntu Server (>= 22.04), run the setup script,
+
+```
+$ bin/setup.ubuntu.sh
+```
+
+### HTTPS certificates and acme.sh
+
+**If free HTTPS certificate**, if you have commercial certificates, please ignore this.
+
+acme.sh for free SSL certificate request and renew, keep it in base OS might be easy then in Docker and keep it out of scope the docker chain can make the docker chain more clean and easy for local development and debug.
+
+For production deployment, acme.sh is as an option to obtain HTTPS certificates. There are also other popular solutions such as Letsencrypt.
+
+There are two ways to enable acme.sh SSL certificate for [homecloud-docker](https://github.com/a3linux/homecloud-docker) based deployment.
+
+1. Use self signed certificate to bootstrap or local development deployment
+
+*bin/create_selfsigned_crt.sh* can be used to generate such certificates. The script generates *DNS_NAME*.crt and *DNS_NAME*.key in the current folder according to the input *-n DNS_NAME*, also you can give more DNS ALIAS with -a.
+
+```
+$ bin/create_selfsigned_crt.sh -n sample.com -a auth.sample.com,office.sample.com 
+```
+will create sample.com.crt as the certificate and sample.com.key as the private key.
+
+After setup the deployment with self-signed certificates, you can use acme.sh to get real certificate and replace the self-signed one
+
+2. Use acme.sh standalone mode to get the SSL certificate first, then set up the homecloud-docker configuration to kick start
+
+#### Install acme.sh and config
+
+```
+curl https://get.acme.sh | sh -s email=my@example.com
+```
+
+More on [acme.sh document](https://github.com/acmesh-official/acme.sh/wiki/How-to-install)
+
+Setup default CA, 
+
+```
+acme.sh --set-default-ca --server zerossl
+acme.sh --set-default-ca --server letsencrypt
+```
+
+Register account for ZeroSSL(EAB),
+
+```
+acme.sh --register-account  --server zerossl \
+        --eab-kid <EAB-KEY-ID> \
+        --eab-hmac-key <EAB-KEY-HMAC>
+```
+
+#### Issue SSL certificate by acme.sh
+
+Very basic issue command, 
+
+```
+acme.sh --issue -d domain.com -w ${APPS_BASE}/lb/webroot
+```
+
+${APPS_BASE}/lb/webroot is based on the homecloud.<env> file, APPS_BASE and assume the homecloud service already up.
+
+acme.sh supports so many different modes to issue certificate. Go to [Here](https://github.com/acmesh-official/acme.sh) for more details.
+
+
+## HomeCloud docker compose service quick start
+
+### Initialize the service
 
 * BaseOS installed and setup
-* Clone this repository
 * Config the deployment config file, copy the _homecloud.env_ to homecloud.dev or homecloud.prod and put into folder according to your OS environment, e.g. <some_path>/homecloud.dev
 * Run ./sync_deployment.sh -c <some_path>/homecloud.<env>, here env is dev or prod you copied above
 * Go to service folder to start the service with <some_path>/bin/start.dbonly.sh 
 * Create databases by run <some_apth>/bin/create_databases.sh
 * Stop the service with <some_path>/bin/stop.dbonly.sh
 * Start the service with <some_path>/bin/start.sh and waiting for all service up
-* First time setup
 
 ### Setup services
 

@@ -1,0 +1,14 @@
+defaults
+tls on
+auth on
+logfile ~/.msmtp.log
+
+#Gmail
+account gmail
+host smtp.gmail.com
+port 587
+user <gmail_address>
+from <gmail_address>
+password GMAIL_SMTP_PASSWD
+
+account default: gmail
