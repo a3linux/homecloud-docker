@@ -140,7 +140,13 @@ Start to use Authentik if everything is fine.
 
 #### Nextcloud
 
-Login into Nextcloud by URL https://<PRIMARY_SERVER_NAME>/.
+* Run _config_nextcloud.sh_ for basic Nextcloud config,
+
+```
+$ ${SERVICE_DESTINATION}/bin/config_nextcloud.sh -a nextcloud
+```
+
+* Login into Nextcloud by URL https://<PRIMARY_SERVER_NAME>/.
 
 ##### Well known issue about Nextcloud App Store json load issue
 
@@ -152,7 +158,15 @@ WARN message in Nextcloud Administration -> Logging,
 
  Root cause of timeout, Nextcloud source code, lib/private/App/AppStore/Fetcher/Fetcher.php, line 103, $timeout => 60. I did not get reasonable solution for this. Just waiting for a while and lucky to have it.
 
-If your Nextcloud App Store is fine, then the script *config_nextcloud.sh* can be used for more Nextcloud configurations, including the Nextcloud Office(Collabora), Fulltextsearch and so forth. Use -h with the script to check more details. Anyway, all those settings can be done on Nextcloud management console too.
+* More Nextcloud config and apps install
+
+For example,
+
+```
+$ ${SERVICE_DESTINATION}/bin/config_nextcloud -a fulltextsearch
+```
+
+All those can be done on Nextcloud management console too. It is not necessary to run those commands.
 
 #### Nextcloud SSO by Authentik
 
@@ -161,3 +175,8 @@ There are good reference online for this part,
 * [Complete Guide from Jack](https://blog.cubieserver.de/2022/complete-guide-to-nextcloud-saml-authentication-with-authentik/) 
 * [Another guide](https://geekscircuit.com/nextcloud-saml-authentication-with-athentik/).
 
+#### Customization
+
+Leave users to do.
+
+### Backup and restore
