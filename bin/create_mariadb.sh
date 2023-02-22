@@ -42,12 +42,10 @@ if [ -z "${VAULT_PATH}" ] || [ -z "${DBNAME}" ] || [ -z "${DBUSER}" ] || [ -z "$
 fi
 
 DBPASSWD_FILE="mariadb_${DBUSER}_password.txt"
-ROOT_SECRET_FILE="${VAULT_PATH}/mariadb_root_password.txt"
 
-if [ -f "${ROOT_SECRET_FILE}" ]; then
-    ROOT_PASSWD=$(cat "${ROOT_SECRET_FILE}")
-else
-    echo "${ROOT_SECRET_FILE} not found, please check!"
+ROOT_PASSWD=$(docker exec -i ${DATABASE_CONTAINER_NAME} cat /run/secrets/mariadb_root_password)
+if [ -z "${ROOT_PASSWD}" ]; then
+    echo "Failed to fetch MariaDB root password from container homecloud_mariadb"
     error_exit
 fi
 
