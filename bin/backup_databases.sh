@@ -54,17 +54,17 @@ case "${DBTYPE}" in
         fi
         ;;
     mariadb)
-        MARIADB_ROOT_PASSWD=`docker exec -i "${DBCONTAINER}" cat /run/secrets/mariadb_root_password`
+        MARIADB_ROOT_PASSWD=$(docker exec -i "${DBCONTAINER}" cat /run/secrets/mariadb_root_password)
         if [ -z "${MARIADB_ROOT_PASSWD}" ]; then
             echo "Fail to fetch MariaDB root password from container ${DBCONTAINER}!"
-            error_exit
+            exit 1
         fi
         docker exec -i "${DBCONTAINER}" mariadb-dump --all-databases -uroot -p"$MARIADB_ROOT_PASSWD" > "${DUMP_FILE_FULLPATH}"
         if [ $? -eq 0 ]; then
             echo "All ${DBTYPE} databases from container ${DBCONTAINER} dump to ${DUMP_FILE_FULLPATH} succesfully!"
         else
             echo "Failed to dump all ${DBTYPE} databases from container ${DBCONTAINER} to ${DUMP_FILE_FULLPATH}!!!"
-            error_exit
+            exit 1
         fi
         ;;
 esac
