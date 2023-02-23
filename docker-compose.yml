@@ -26,6 +26,12 @@ services:
     profiles: ["dev", "prod"]
     image: axistools/nginx-ldap:alpine
     restart: unless-stopped
+    healthcheck:
+      test: curl --fail http://localhost/ || exit 1
+      start_period: 2m
+      interval: 60s
+      retries: 5
+      timeout: 5s
     deploy:
       resources:
         limits:
@@ -58,6 +64,12 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mariadb_root_password
       MARIADB_AUTO_UPGRADE: "yes"
+    healthcheck:
+      test: mariadb-admin ping -h 127.0.0.1 -uroot -p$(cat $MYSQL_ROOT_PASSWORD_FILE)
+      start_period: 30s
+      interval: 60s
+      retries: 5
+      timeout: 10s
 
   postgres:
     container_name: homecloud_postgres
@@ -76,6 +88,12 @@ services:
           memory: 512M
         reservations:
           memory: 256M
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      start_period: 30s
+      interval: 30s
+      retries: 5
+      timeout: 10s
 
   redis:
     container_name: homecloud_redis
@@ -173,6 +191,12 @@ services:
     profiles: ["dev", "prod"]
     image: nextcloud:25-fpm-alpine
     restart: unless-stopped
+    healthcheck:
+      test: nc -z postgres 5432 || nc -z 127.0.0.1 9000 || exit 1
+      start_period: 2m
+      interval: 60s
+      retries: 5
+      timeout: 5s
     secrets:
       - postgres_nextcloud_password
       - nextcloud_admin_password
@@ -199,6 +223,12 @@ services:
     profiles: ["dev", "prod"]
     image: nginx:alpine
     restart: unless-stopped
+    healthcheck:
+      test: curl --fail http://localhost/ || exit 1
+      start_period: 1m
+      interval: 60s
+      retries: 5
+      timeout: 5s
     depends_on:
       - nextcloudapp
     deploy:
