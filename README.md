@@ -146,7 +146,8 @@ Start to use Authentik if everything is fine.
 $ ${SERVICE_DESTINATION}/bin/config_nextcloud.sh -a nextcloud
 ```
 
-* Login into Nextcloud by URL https://<PRIMARY_SERVER_NAME>/.
+* Login into Nextcloud by URL *https://<PRIMARY_SERVER_NAME>/*
+* The admin password is locate in *$VAULT_BASE/nextcloud_admin_password.txt*
 
 ##### Well known issue about Nextcloud App Store json load issue
 
@@ -168,6 +169,25 @@ $ ${SERVICE_DESTINATION}/bin/config_nextcloud -a fulltextsearch
 
 All those can be done on Nextcloud management console too. It is not necessary to run those commands.
 
+#### Nextcloud operation
+
+You can always manage Nextcloud through management console(UI).
+For some cases, you will need Nextcloud cli *occ* interface, in homecloud deployment environment, this is always available,
+
+```
+$ docker exec -it -u www-data homecloud_nextcloudapp php /var/www/html/occ CMD OPTIONS
+```
+
+For example to scan certain user's files, 
+```
+$ docker exec -it -u www-data homecloud_nextcloudapp php /var/www/html/occ files:scan user_id
+```
+
+More about Nextcloud *occ*, please go to [here](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/occ_command.html)
+
+##### Nextcloud occ cli issue
+
+
 #### Nextcloud SSO by Authentik
 
 There are good reference online for this part, 
@@ -175,8 +195,19 @@ There are good reference online for this part,
 * [Complete Guide from Jack](https://blog.cubieserver.de/2022/complete-guide-to-nextcloud-saml-authentication-with-authentik/) 
 * [Another guide](https://geekscircuit.com/nextcloud-saml-authentication-with-athentik/).
 
+* Login into Nextcloud by URL *https://<PRIMARY_SERVER_NAME>/login?direct=1* after switch to SSO enabled
+
 #### Customization
 
 Leave users to do.
 
 ### Backup and restore
+
+#### Databases
+
+The script *bin/backup_databases.sh* can be used to dump all databases for MariaDB and Postgres, also a restore_databases.sh provided for restore in case.
+
+#### Files
+
+We have four folders or volumes in homecloud deployment environment and backup should take care of them.
+
