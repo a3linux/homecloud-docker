@@ -54,3 +54,7 @@ fi
 docker exec -i "${DBCONTAINER}" createdb -U postgres "${DBNAME}";
 docker exec -i "${DBCONTAINER}" psql -U postgres -c "CREATE USER ${DBUSER} WITH PASSWORD '${DBPASSWD}';"
 docker exec -i "${DBCONTAINER}" psql -U postgres -c "GRANT ALL PRIVILEGES ON DATABASE ${DBNAME} TO ${DBUSER};"
+# From PostgreSQL 15.0, the public schema permission changed.
+docker exec -i "${DBCONTAINER}" psql -U postgres -c "ALTER DATABASE ${DBNAME} OWNER TO ${DBUSER};"
+docker exec -i "${DBCONTAINER}" psql -U postgres -c "GRANT ALL ON SCHEMA public TO ${DBUSER};"
+docker exec -i "${DBCONTAINER}" psql -U postgres -c "GRANT USAGE, CREATE ON SCHEMA public TO ${DBUSER};"
