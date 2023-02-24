@@ -138,6 +138,9 @@ printf "services:\n" > "${HC_DC_ENV_FILE}"
 {
     printf "\n";
     printf "  lb:\n";
+    printf "    ports:\n";
+    printf "      - %s:80\n" "${HTTP_PORT}";
+    printf "      - %s:443\n" "${HTTPS_PORT}";
     printf "    volumes:\n";
     printf "      - %s:/etc/nginx.conf\n" "${APPS_BASE}/lb/nginx.conf";
     printf "      - %s:/etc/nginx/conf.d\n" "${APPS_BASE}/lb/conf.d";

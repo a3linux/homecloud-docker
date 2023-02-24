@@ -64,8 +64,13 @@ case "${TARGET_APP}" in
 
         # Reverse proxy related settings
         docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set trusted_domains 0 --value="${NC_DOMAIN}"
-        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set overwrite.cli.url --value "https://${NC_DOMAIN}:${NC_PORT}"
-        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set overwritehost --value "${NC_DOMAIN}:${NC_PORT}"
+        if [ "${NC_PORT}" == "443" ]; then
+            docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set overwrite.cli.url --value "https://${NC_DOMAIN}"
+            docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set overwritehost --value "${NC_DOMAIN}"
+        else
+            docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set overwrite.cli.url --value "https://${NC_DOMAIN}:${NC_PORT}"
+            docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set overwritehost --value "${NC_DOMAIN}:${NC_PORT}"
+        fi
         docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set overwriteprotocol --value "https"
         docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set allow_local_remote_servers --value true --type bool
 

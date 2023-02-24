@@ -13,7 +13,7 @@ services:
     image: traefik/whoami
     restart: unless-stopped
     ports:
-      - 8088:80
+      - 9888:80
     deploy:
       resources:
         limits:
@@ -38,9 +38,6 @@ services:
           memory: 256M
         reservations:
           memory: 128M
-    ports:
-      - 8080:80
-      - 8443:443
     depends_on:
       - whoami
       - authentikapp
