@@ -8,4 +8,5 @@ NEXTCLOUD_APPS=$(cat "${MYSELF_PATH%%\/bin}"/etc/nextcloud.apps)
 for app in ${NEXTCLOUD_APPS}
 do
     docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ app:install "${app}"
+    docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ app:update "${app}"
 done
