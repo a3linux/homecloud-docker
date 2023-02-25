@@ -201,19 +201,18 @@ For Authentik side,
 1. _GENERATE_ certificate in "System" => "Certificates" for Nextcloud, Download both certificate and private key file. Also download the authentik self-signed certificate
 2. Go to "Applications" => "Providers", _CREATE_ SAML provider, PRIMARY_SERVER_NAME is the one in homecloud.<env>
 
-```
-Name: nextcloud-saml
-Authorization flow: choose the implicit or explicit authorization. Explicit means the users will be asked wether they want to give their username and email address to Nextcloud before logging in, with implicit they won’t get asked.
-ACS URL: https://PRIMARY_SERVER_NAME/apps/user_saml/saml/acs
-Issuer: https://PRIMARY_SERVER_NAME/apps/user_saml/saml/metadata
-Service Provider Binding: POST
-Audience: https://PRIMARY_SERVIER_NAME/apps/user_saml/saml/metadata
-Signing certificate: authentik self-signed certificate
-Verification certificate: <The certificate generated in above step>
-Property mappings: select all entries (default)
-NameID Property mapping: User ID
-the rest of the fields you can leave as they are
-```
+- Name: nextcloud-saml
+- Authorization flow: choose the implicit or explicit authorization. Explicit means the users will be asked wether they want to give their username and email address to Nextcloud before logging in, with implicit they won’t get asked.
+- ACS URL: https://PRIMARY_SERVER_NAME/apps/user_saml/saml/acs
+- Issuer: https://PRIMARY_SERVER_NAME/apps/user_saml/saml/metadata
+- Service Provider Binding: POST
+- Audience: https://PRIMARY_SERVIER_NAME/apps/user_saml/saml/metadata
+- Signing certificate: authentik self-signed certificate
+- Verification certificate: <The certificate generated in above step>
+- Property mappings: select all entries (default)
+- NameID Property mapping: User ID
+
+The rest of the fields you can leave as they are
 
 3. Go to "Applications" => "Applications", _CREATE_ application Nextcloud
 
@@ -222,43 +221,48 @@ For Nextcloud sied,
 1. Go to "SSO & SAML authentication" app
 2. Set like this,
 
-```
 - General
-    Attribute to map UID to: http://schemas.goauthentik.io/2021/02/saml/username
-    Display name of Identity Provider: Authentik SSO
+
+    - Attribute to map UID to: http://schemas.goauthentik.io/2021/02/saml/username
+    - Display name of Identity Provider: Authentik SSO
 
 - Service Provider Data
-    Choose X509 subject name and insert the Nextcloud certificate and private key you downloaded from Authentik (the one that was generated)
+
+    - Choose X509 subject name and insert the Nextcloud certificate and private key you downloaded from Authentik (the one that was generated)
 
 - Identity Provider Data
-    Identifier of the IdP: https://PRIMARY_SERVER_NAME/apps/user_saml/saml/metadata
-    URL Target of the IdP where the SP will send the Authentication Request Message: https://AUTHENTIK_SERVER_NAME/application/saml/nextcloud/sso/binding/redirect/
-    URL Location of IdP where the SP will send the SLO Request: https://AUTHENTIK_SERVER_NAME/if/session-end/nextcloud/
-    URL Location of SLO Response: (empty)
-    Public X.509 certificate of the IdP: insert the certificate you downloaded from authentik self-signed certificate
+    
+    - Identifier of the IdP: https://PRIMARY_SERVER_NAME/apps/user_saml/saml/metadata
+    - URL Target of the IdP where the SP will send the Authentication Request Message: https://AUTHENTIK_SERVER_NAME/application/saml/nextcloud/sso/binding/redirect/
+    - URL Location of IdP where the SP will send the SLO Request: https://AUTHENTIK_SERVER_NAME/if/session-end/nextcloud/
+    - URL Location of SLO Response: (empty)
+    - Public X.509 certificate of the IdP: insert the certificate you downloaded from authentik self-signed certificate
 
 - Attribute mapping
-    Attribute to map the displayname to: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name
-    Attribute to map the email address to: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress
-    Attribute to map the users groups to: http://schemas.xmlsoap.org/claims/Group
+    
+    - Attribute to map the displayname to: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name
+    - Attribute to map the email address to: http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress
+    - Attribute to map the users groups to: http://schemas.xmlsoap.org/claims/Group
 
 - Security settings
 
-  Signatures and encryption offered
-    Indicates that the nameID of the samlp:logoutRequest sent by this SP will be encrypted :white_check_mark:
-    Indicates whether the samlp:AuthnRequest messages sent by this SP will be signed :white_check_mark:
-    Indicates whether the samlp:logoutRequest messages sent by this SP will be signed :white_check_mark:
-    Indicates whether the samlp:logoutResponse messages sent by this SP will be signed :white_check_mark:
-    Whether the metadata should be signed :white_check_mark:
+    - Signatures and encryption offered
 
-  Signatures and encryption required
-    Indicates a requirement for the samlp:Response, samlp:LogoutRequest and samlp:LogoutResponse elements received by this SP to be signed
-    Indicates a requirement for the saml:Assertion elements received by this SP to be signed
-    Indicates a requirement for the saml:Assertion elements received by this SP to be encrypted
-    Indicates a requirement for the NameID element on the SAMLResponse received by this SP to be present :white_check_mark:
-    Indicates a requirement for the NameID received by this SP to be encrypted
-    Indicates if the SP will validate all received XML :white_check_mark:
-```
+        - Indicates that the nameID of the samlp:logoutRequest sent by this SP will be encrypted :white_check_mark:
+        - Indicates whether the samlp:AuthnRequest messages sent by this SP will be signed :white_check_mark:
+        - Indicates whether the samlp:logoutRequest messages sent by this SP will be signed :white_check_mark:
+        - Indicates whether the samlp:logoutResponse messages sent by this SP will be signed :white_check_mark:
+        - Whether the metadata should be signed :white_check_mark:
+
+    - Signatures and encryption required
+
+        - Indicates a requirement for the samlp:Response, samlp:LogoutRequest and samlp:LogoutResponse elements received by this SP to be signed
+        - Indicates a requirement for the saml:Assertion elements received by this SP to be signed
+        - Indicates a requirement for the saml:Assertion elements received by this SP to be encrypted
+        - Indicates a requirement for the NameID element on the SAMLResponse received by this SP to be present :white_check_mark:
+        - Indicates a requirement for the NameID received by this SP to be encrypted
+        - Indicates if the SP will validate all received XML :white_check_mark:
+
 Finally, after you entered all these settings, a green Metadata valid box should appear at the bottom. Note that there is no Save button, Nextcloud automatically saves these settings.
 
 * Login into Nextcloud by URL *https://<PRIMARY_SERVER_NAME>/login?direct=1* after switch to SSO enabled
