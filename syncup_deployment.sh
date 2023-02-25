@@ -182,8 +182,14 @@ echo ""
 echo "Generate Authentik configurations."
 AUTHENTIK_ENV_TEMPLATE="${HC_PROGRAM_PATH}"/env_files/authentik.env
 AUTHENTIK_ENV_FILE="${SERVICE_DESTINATION}"/authentik.${TARGET_ENV}
-echo "  Copy and update env file authentik.${TARGET_ENV}"
-cp -v "${AUTHENTIK_ENV_TEMPLATE}" "${AUTHENTIK_ENV_FILE}"
+if [ -f "${AUTHENTIK_ENV_FILE}" ]; then
+    # File existed, not the first time
+    echo "   ${AUTHENTIK_ENV_FILE} exists and will not update it to avoid configuration overwrite"
+    echo "   !!! Please check and update ${AUTHENTIK_ENV_FILE} based on ${AUTHENTIK_ENV_TEMPLATE} !!!"
+else
+    echo "  Copy and update env file authentik.${TARGET_ENV}"
+    cp -v "${AUTHENTIK_ENV_TEMPLATE}" "${AUTHENTIK_ENV_FILE}"
+fi
 # Authentik Server
 mkdir -p "${APPS_BASE}"/authentik/media "${APPS_BASE}"/authentik/templates "${APPS_BASE}"/authentik/data "${APPS_BASE}"/authentik/certs "${APPS_BASE}"/authentik/dist/extra
 echo "  Sync up config files."
