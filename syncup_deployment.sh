@@ -101,7 +101,7 @@ HC_DC_BIN_PATH="${SERVICE_DESTINATION}"/bin
 rsync -ar "${HC_PROGRAM_PATH}"/bin/ "${HC_DC_BIN_PATH}"/
 HC_DC_ETC_PATH="${SERVICE_DESTINATION}"/etc
 rsync -ar "${HC_PROGRAM_PATH}"/etc/ "${HC_DC_ETC_PATH}"/
-sed -i '' "s|%SERVICE_DESTINATION%|${SERVICE_DESTINATION}|g" "${HC_DC_ETC_PATH}"/systemd/system/multi-user.target.wants/homecloud.service
+sed -i -e "s|%SERVICE_DESTINATION%|${SERVICE_DESTINATION}|g" "${HC_DC_ETC_PATH}"/systemd/system/multi-user.target.wants/homecloud.service
 cp -v "${HC_PROGRAM_PATH}"/docker-compose.yml "${SERVICE_DESTINATION}"/
 HC_DC_ENV_FILE="${SERVICE_DESTINATION}"/docker-compose.${TARGET_ENV}.yml
 
@@ -123,7 +123,7 @@ for conf in "${APPS_BASE}"/lb/conf.d/*.conf
 do
     for find_to_replace in PRIMARY_SERVER_NAME AUTHENTIK_SERVER_NAME PRIMARY_CERT_PATH AUTHENTIK_CERT_PATH PRIMARY_PRIVATE_KEY_PATH AUTHENTIK_PRIVATE_KEY_PATH HTTPS_PORT CODE_CERT_PATH CODE_PRIVATE_KEY_PATH
     do
-        sed -i '' "s|%${find_to_replace}%|${!find_to_replace}|g" "${conf}"
+        sed -i -e "s|%${find_to_replace}%|${!find_to_replace}|g" "${conf}"
     done
 done
 if [ "${CODE_SERVER_ENABLED}" != "yes" ]; then
@@ -188,9 +188,9 @@ cp -v "${AUTHENTIK_ENV_TEMPLATE}" "${AUTHENTIK_ENV_FILE}"
 mkdir -p "${APPS_BASE}"/authentik/media "${APPS_BASE}"/authentik/templates "${APPS_BASE}"/authentik/data "${APPS_BASE}"/authentik/certs "${APPS_BASE}"/authentik/dist/extra
 echo "  Sync up config files."
 rsync -ar "${HC_CONF_SOURCE_PATH}"/authentik/ "${APPS_BASE}"/authentik/
-sed -i '' "s|%PRIMARY_SERVER_NAME%|${PRIMARY_SERVER_NAME}|g" "${APPS_BASE}/authentik/data/user_settings.py"
-sed -i '' "s|%AUTHENTIK_SERVER_NAME%|${AUTHENTIK_SERVER_NAME}|g" "${APPS_BASE}/authentik/data/user_settings.py"
-sed -i '' "s|%HTTPS_PORT%|${HTTPS_PORT}|g" "${APPS_BASE}/authentik/data/user_settings.py"
+sed -i -e "s|%PRIMARY_SERVER_NAME%|${PRIMARY_SERVER_NAME}|g" "${APPS_BASE}/authentik/data/user_settings.py"
+sed -i -e "s|%AUTHENTIK_SERVER_NAME%|${AUTHENTIK_SERVER_NAME}|g" "${APPS_BASE}/authentik/data/user_settings.py"
+sed -i -e "s|%HTTPS_PORT%|${HTTPS_PORT}|g" "${APPS_BASE}/authentik/data/user_settings.py"
 
 echo "  Generate authentik server(app) docker-compose config."
 if [ "${AUTHENTIK_ENV_FILE_ENABLED}" == "yes" ]; then
@@ -283,8 +283,8 @@ CODE_ENV_TEMPLATE="${HC_PROGRAM_PATH}"/env_files/code.env
 CODE_ENV_FILE="${SERVICE_DESTINATION}"/code.${TARGET_ENV}
 echo "  Copy and update env file code.${TARGET_ENV}"
 cp -v "${CODE_ENV_TEMPLATE}" "${CODE_ENV_FILE}"
-sed -i '' "s|%PRIMARY_SERVER_NAME%|${PRIMARY_SERVER_NAME}|g" "${CODE_ENV_FILE}"
-sed -i '' "s|%HTTPS_PORT%|${HTTPS_PORT}|g" "${CODE_ENV_FILE}"
+sed -i -e "s|%PRIMARY_SERVER_NAME%|${PRIMARY_SERVER_NAME}|g" "${CODE_ENV_FILE}"
+sed -i -e "s|%HTTPS_PORT%|${HTTPS_PORT}|g" "${CODE_ENV_FILE}"
 echo "  Generate CODE docker-compose config"
 mkdir -p "${APPS_BASE}"/code/fonts
 
@@ -362,4 +362,9 @@ if [ -x "${CREATE_MARIADB}" ]; then
 fi
 chmod +x "${CREATE_DATABASES}"
 
+if [ "$(uname)" == "Darwin" ]; then
+    # Fix for MacOS sed https://unix.stackexchange.com/questions/13711/differences-between-sed-on-mac-osx-and-other-standard-sed
+    find "${SERVICE_DESTINATION}" -name "*\-e" -exec rm -f {} \;
+    find "${APPS_BASE}" -name "*\-e" -exec rm -f {} \;
+fi
 echo "Prepare deployment environment ${TARGET_ENV} Done!"
