@@ -110,7 +110,7 @@ sed -i -e "s|%SETUP_ENV_FILENAME%|${SETUP_ENV_FILENAME}|g" "${HC_DC_ETC_PATH}"/c
 sed -i -e "s|%SERVICE_DESTINATION%|${SERVICE_DESTINATION}|g" "${HC_DC_ETC_PATH}"/cron.hourly/homecloud_backup
 sed -i -e "s|%DEPLOYMENT_USER%|${DEPLOYMENT_USER}|g" "${HC_DC_ETC_PATH}"/cron.hourly/homecloud_backup
 sed -i -e "s|%ALERT_EMAIL%|${ALERT_EMAIL}|g" "${HC_DC_ETC_PATH}"/cron.hourly/homecloud_backup
-chown +x "${HC_DC_ETC_PATH}"/cron.hourly/homecloud_backup "${HC_DC_ETC_PATH}"/cron.daily/homecloud_backup
+chmod +x "${HC_DC_ETC_PATH}"/cron.hourly/homecloud_backup "${HC_DC_ETC_PATH}"/cron.daily/homecloud_backup
 cp -v "${HC_PROGRAM_PATH}"/docker-compose.yml "${SERVICE_DESTINATION}"/
 HC_DC_ENV_FILE="${SERVICE_DESTINATION}"/docker-compose.${TARGET_ENV}.yml
 
