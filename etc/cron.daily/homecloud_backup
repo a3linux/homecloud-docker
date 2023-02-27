@@ -17,22 +17,22 @@ TAR_OPT=" zcvf "
 FIND_CMD=$(which find)
 CHOWN_CMD=$(which chown)
 
-DATE_STR=$(date %Y%m%d)
+DATE_STR=$(date +%Y%m%d)
 
 . %SERVICE_DESTINATION%/%SETUP_ENV_FILENAME%
 
 # Sync deployment from SSD to HDD
 DST_BASE=$(dirname "${DATA_BASE}")
 # Backup deployment of HomeCloud
-${SYNC_CMD} -ra --delete "${APPS_BASE}"/ "${DST_BASE}"/apps/
+${SYNC_CMD} -r --delete "${APPS_BASE}"/ "${DST_BASE}"/apps/
 if [ $? -ne 0 ]; then
     echo -e "Subject: HomeCloud DAILY BACKUP ALERT: ${APPS_BASE} backup failure\n\n: Timestamp: $(date)\r\nDetails: backup ${APPS_BASE} job failed\n\n\n$*" | msmtp %ALERT_EMAIL%
 fi
-${SYNC_CMD} -ra "${SERVICE_DESTINATION}"/ "${DST_BASE}"/homecloud/
+${SYNC_CMD} -r "${SERVICE_DESTINATION}"/ "${DST_BASE}"/homecloud/
 if [ $? -ne 0 ]; then
     echo -e "Subject: HomeCloud DAILY BACKUP ALERT: ${SERVICE_DESTINATION} backup failure\n\n: Timestamp: $(date)\r\nDetails: backup ${SERVICE_DESTINATION} job failed\n\n\n$*" | msmtp %ALERT_EMAIL%
 fi
-${SYNC_CMD} -ra "${VAULT_BASE}"/ "${DST_BASE}"/vault/
+${SYNC_CMD} -r "${VAULT_BASE}"/ "${DST_BASE}"/vault/
 if [ $? -ne 0 ]; then
     echo -e "Subject: HomeCloud DAILY BACKUP ALERT: ${VAULT_BASE} backup failure\n\n: Timestamp: $(date)\r\nDetails: backup ${VAULT_BASE} job failed\n\n\n$*" | msmtp %ALERT_EMAIL%
 fi
