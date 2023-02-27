@@ -44,5 +44,5 @@ LAST_MODIFIED=$(stat -c %Y "${FILENAME}")
 HOURS_FROM_MODIFIED=$(( (CTIME - LAST_MODIFIED) / 3600 ))
 
 if [ "${HOURS_FROM_MODIFIED}" -lt "${HOURS}" ]; then
-    echo -e "Subject: File ${FILENAME} updated in ${HOURS} hours!\n\n ${FILENAME} is updated in ${HOURS} hours\n\necho $(ls -l ${FILENAME})\r\nTimestamp: $(date)\r\n" | msmtp "${EMAIL}"
+    echo -e "Subject: File ${FILENAME} updated in ${HOURS} hours!\n\n ${FILENAME} is updated in ${HOURS} hours\n\n$(ls -l ${FILENAME})\r\nTimestamp: $(date)\r\n" | msmtp "${EMAIL}"
 fi
