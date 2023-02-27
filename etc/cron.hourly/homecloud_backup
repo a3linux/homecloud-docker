@@ -13,7 +13,7 @@ if [ ! -f %SERVICE_DESTINATION%/%SETUP_ENV_FILENAME% ]; then
     exit 0
 fi
 
-source %SERVICE_DESTINATION%/%SETUP_ENV_FILENAME%
+. %SERVICE_DESTINATION%/%SETUP_ENV_FILENAME%
 
 # backup Databases hourly
 for dbengine in postgres mariadb

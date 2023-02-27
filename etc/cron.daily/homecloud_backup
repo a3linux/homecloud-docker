@@ -19,7 +19,7 @@ CHOWN_CMD=$(which chown)
 
 DATE_STR=$(date %Y%m%d)
 
-source %SERVICE_DESTINATION%/%SETUP_ENV_FILENAME%
+. %SERVICE_DESTINATION%/%SETUP_ENV_FILENAME%
 
 # Sync deployment from SSD to HDD
 DST_BASE=$(dirname "${DATA_BASE}")
