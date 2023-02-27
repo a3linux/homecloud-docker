@@ -1,0 +1,56 @@
+#!/usr/bin/sh
+# HomeCloud backup daily
+#
+#if [ "$(id -u)" -eq 0 ]; then
+#    exec sudo -H -u %DEPLOYMENT_USER% $0 "$@"
+#    echo "This is never reached.";
+#fi
+
+# HomeCloud service might not be deployed, skip the job
+if [ ! -f %SERVICE_DESTINATION%/%SETUP_ENV_FILENAME% ]; then
+    exit 0
+fi
+
+SYNC_CMD=$(which rsync)
+TAR_CMD=$(which tar)
+TAR_OPT=" zcvf "
+FIND_CMD=$(which find)
+CHOWN_CMD=$(which chown)
+
+DATE_STR=$(date %Y%m%d)
+
+source %SERVICE_DESTINATION%/%SETUP_ENV_FILENAME%
+
+# Sync deployment from SSD to HDD
+DST_BASE=$(dirname "${DATA_BASE}")
+# Backup deployment of HomeCloud
+${SYNC_CMD} -ra --delete "${APPS_BASE}"/ "${DST_BASE}"/apps/
+if [ $? -ne 0 ]; then
+    echo -e "Subject: HomeCloud DAILY BACKUP ALERT: ${APPS_BASE} backup failure\n\n: Timestamp: $(date)\r\nDetails: backup ${APPS_BASE} job failed\n\n\n$*" | msmtp %ALERT_EMAIL%
+fi
+${SYNC_CMD} -ra "${SERVICE_DESTINATION}"/ "${DST_BASE}"/homecloud/
+if [ $? -ne 0 ]; then
+    echo -e "Subject: HomeCloud DAILY BACKUP ALERT: ${SERVICE_DESTINATION} backup failure\n\n: Timestamp: $(date)\r\nDetails: backup ${SERVICE_DESTINATION} job failed\n\n\n$*" | msmtp %ALERT_EMAIL%
+fi
+${SYNC_CMD} -ra "${VAULT_BASE}"/ "${DST_BASE}"/vault/
+if [ $? -ne 0 ]; then
+    echo -e "Subject: HomeCloud DAILY BACKUP ALERT: ${VAULT_BASE} backup failure\n\n: Timestamp: $(date)\r\nDetails: backup ${VAULT_BASE} job failed\n\n\n$*" | msmtp %ALERT_EMAIL%
+fi
+
+# Backup deployment user home
+mkdir -p "${DST_BASE}"/home
+if [ -d "/home/${DEPLOYMENT_USER}" ]; then
+    ${TAR_CMD} ${TAR_OPT} "${DST_BASE}/home/home-${DEPLOYMENT_USER}-${DATE_STR}.tar.gz" /home/${DEPLOYMENT_USER}
+    if [ $? -ne 0 ]; then
+        echo -e "Subject: HomeCloud DAILY BACKUP ALERT: ${DEPLOYMENT_USER} home folder backup failure\n\n: Timestamp: $(date)\r\nDetails: backup ${DEPLOYMENT_USER} home folder job failed\n\n\n$*" | msmtp %ALERT_EMAIL%
+    fi
+    # Clean up old backups, keep only latest 7 days
+    ${FIND_CMD} ${DST_BASE}/home -name "home-${DEPLOYMENT_USER}-*.tar.gz" -a -mtime +6 -exec rm -f {} \;
+    if [ $? -ne 0 ]; then
+        echo -e "Subject: HomeCloud DAILY BACKUP ALERT: clean up old backup of ${DEPLOYMENT_USER} home folder archives failure\n\n: Timestamp: $(date)\r\nDetails: Clean up ${DEPLOYMENT_USER} home folder old archives failed\n\n\n$*" | msmtp %ALERT_EMAIL%
+    fi
+fi
+
+# Change the backup files ownership
+${CHOWN_CMD} -R ${DEPLOYMENT_USER}:${DEPLOYMENT_USER} "${DST_BASE}"/apps/ "${DST_BASE}"/homecloud/ "${DST_BASE}"/vault/ "${DST_BASE}"/home/
+# vim: filetype=bash

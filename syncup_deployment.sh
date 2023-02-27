@@ -102,6 +102,14 @@ rsync -ar "${HC_PROGRAM_PATH}"/bin/ "${HC_DC_BIN_PATH}"/
 HC_DC_ETC_PATH="${SERVICE_DESTINATION}"/etc
 rsync -ar "${HC_PROGRAM_PATH}"/etc/ "${HC_DC_ETC_PATH}"/
 sed -i -e "s|%SERVICE_DESTINATION%|${SERVICE_DESTINATION}|g" "${HC_DC_ETC_PATH}"/systemd/system/multi-user.target.wants/homecloud.service
+sed -i -e "s|%SETUP_ENV_FILENAME%|${SETUP_ENV_FILENAME}|g" "${HC_DC_ETC_PATH}"/cron.daily/homecloud_backup
+sed -i -e "s|%SERVICE_DESTINATION%|${SERVICE_DESTINATION}|g" "${HC_DC_ETC_PATH}"/cron.daily/homecloud_backup
+sed -i -e "s|%DEPLOYMENT_USER%|${DEPLOYMENT_USER}|g" "${HC_DC_ETC_PATH}"/cron.daily/homecloud_backup
+sed -i -e "s|%ALERT_EMAIL%|${ALERT_EMAIL}|g" "${HC_DC_ETC_PATH}"/cron.daily/homecloud_backup
+sed -i -e "s|%SETUP_ENV_FILENAME%|${SETUP_ENV_FILENAME}|g" "${HC_DC_ETC_PATH}"/cron.hourly/homecloud_backup
+sed -i -e "s|%SERVICE_DESTINATION%|${SERVICE_DESTINATION}|g" "${HC_DC_ETC_PATH}"/cron.hourly/homecloud_backup
+sed -i -e "s|%DEPLOYMENT_USER%|${DEPLOYMENT_USER}|g" "${HC_DC_ETC_PATH}"/cron.hourly/homecloud_backup
+sed -i -e "s|%ALERT_EMAIL%|${ALERT_EMAIL}|g" "${HC_DC_ETC_PATH}"/cron.hourly/homecloud_backup
 cp -v "${HC_PROGRAM_PATH}"/docker-compose.yml "${SERVICE_DESTINATION}"/
 HC_DC_ENV_FILE="${SERVICE_DESTINATION}"/docker-compose.${TARGET_ENV}.yml
 
@@ -373,4 +381,5 @@ if [ "$(uname)" == "Darwin" ]; then
     find "${SERVICE_DESTINATION}" -name "*\-e" -exec rm -f {} \;
     find "${APPS_BASE}" -name "*\-e" -exec rm -f {} \;
 fi
+
 echo "Prepare deployment environment ${TARGET_ENV} Done!"
