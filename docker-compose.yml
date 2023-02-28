@@ -134,7 +134,8 @@ services:
       AUTHENTIK_POSTGRESQL__PASSWORD: file:///run/secrets/postgres_authentik_password
       AUTHENTIK_SECRET_KEY: file:///run/secrets/authentik_secret_key
       AUTHENTIK_ERROR_REPORTING__ENABLED: false
-      AUTHENTIK_LOG_LEVEL: trace
+      AUTHENTIK_LOG_LEVEL: error
+      AUTHENTIK_DEFAULT_USER_CHANGE_USERNAME: false
     depends_on:
       - postgres
       - redis
@@ -164,6 +165,7 @@ services:
       AUTHENTIK_SECRET_KEY: file:///run/secrets/authentik_secret_key
       AUTHENTIK_ERROR_REPORTING__ENABLED: false
       AUTHENTIK_LOG_LEVEL: error
+      AUTHENTIK_DEFAULT_USER_CHANGE_USERNAME: false
     # `user: root` and the docker socket volume are optional.
     # See more for the docker socket integration here:
     # https://goauthentik.io/docs/outposts/integrations/docker
