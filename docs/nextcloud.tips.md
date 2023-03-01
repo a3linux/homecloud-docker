@@ -32,4 +32,13 @@ This command scan the full groupfolder, please be noticed, groupfolder named as 
 docker exec -it -u www-data homecloud_nextcloudapp php occ groupfolder:scan <idx>/<sub-folder>
 ```
 
+Q: Nextcloud Mail App load email slow?
 
+This is discussed a little on Nextcloud forum, as [this thread](https://help.nextcloud.com/t/mail-app-email-loading-slow/109993/8)
+
+Try to run, it might be helpful
+
+```
+docker exec -it -u www-data homecloud_nextcloudapp php occ maintenance:mimetype:update-db
+docker exec -it -u www-data homecloud_nextcloudapp php occ maintenance:mimetype:update-js
+```
