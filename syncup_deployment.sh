@@ -54,6 +54,7 @@ postgres
 redis
 authentik
 nextcloud
+nextcloud-app
 nextcloud-web
 code
 clamav
@@ -258,6 +259,7 @@ else
 fi
 echo ""
 
+rsync -ar "${HC_CONF_SOURCE_PATH}"/nextcloud-app/ "${APPS_BASE}"/nextcloud-app/
 echo "Generate nextcloud app docker-compose config."
 # nextcloudapp
 {
@@ -265,6 +267,7 @@ echo "Generate nextcloud app docker-compose config."
     printf "  nextcloudapp:\n";
     printf "    volumes:\n";
     printf "      - %s:/var/www/html\n" "${APPS_BASE}/nextcloud";
+    printf "      - %s:/usr/local/etc/php-fpm.d/www.conf:ro\n" "${APPS_BASE}/nextcloud-app/www.conf";
     printf "      - %s:/var/www/html/data\n" "${DATA_BASE}/nextcloud";
 } >> "${HC_DC_ENV_FILE}"
 echo ""

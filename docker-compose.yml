@@ -17,7 +17,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 16M
+          memory: 8M
         reservations:
           memory: 8M
 
@@ -35,9 +35,9 @@ services:
     deploy:
       resources:
         limits:
-          memory: 256M
-        reservations:
           memory: 128M
+        reservations:
+          memory: 64M
     depends_on:
       - whoami
       - authentikapp
@@ -213,7 +213,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 512M
+          memory: 1024M
         reservations:
           memory: 256M
 
@@ -233,9 +233,9 @@ services:
     deploy:
       resources:
         limits:
-          memory: 256M
-        reservations:
           memory: 128M
+        reservations:
+          memory: 32M
 
   nextcloudcron:
     container_name: homecloud_nextcloudcron
@@ -303,7 +303,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 512M
+          memory: 256M
         reservations:
           memory: 128M
 
