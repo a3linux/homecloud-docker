@@ -207,6 +207,7 @@ services:
       REDIS_HOST: redis
       NEXTCLOUD_ADMIN_USER: admin
       NEXTCLOUD_ADMIN_PASSWORD_FILE: /run/secrets/nextcloud_admin_password
+      PHP_UPLOAD_LIMIT: 10G
     depends_on:
       - postgres
       - redis
