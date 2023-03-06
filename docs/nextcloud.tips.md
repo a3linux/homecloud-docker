@@ -42,3 +42,12 @@ Try to run, it might be helpful
 docker exec -it -u www-data homecloud_nextcloudapp php occ maintenance:mimetype:update-db
 docker exec -it -u www-data homecloud_nextcloudapp php occ maintenance:mimetype:update-js
 ```
+
+Q: How to disable the auto generated contacts call "Recently Contacted" in Contacts app? 
+This is more like a Groupware function introduced by Nextcloud Groupware Bundle apps. According to the discussion [here](https://community.e.foundation/t/delete-recently-contacted/38555/3), disable the Nextcloud App contactsinteraction can disable the "Recently Contacted" in Contacts display.
+
+There is no very careful or detail document about this yet.
+
+```
+docker exec -it -u www-data homecloud_nextcloudapp php /var/www/html/occ app:disable contactsinteraction
+```
