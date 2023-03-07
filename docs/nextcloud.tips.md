@@ -51,3 +51,17 @@ There is no very careful or detail document about this yet.
 ```
 docker exec -it -u www-data homecloud_nextcloudapp php /var/www/html/occ app:disable contactsinteraction
 ```
+
+Q: Nextcloud preview halt the server with large amount of photos?
+
+Those Nextcloud preview generator app tuning might be helpful and improving the performance, but still very danger for huge amount of photos.
+
+```
+occ config:app:set previewgenerator squareSizes --value="32 256"
+occ config:app:set previewgenerator widthSizes  --value="256 384"
+occ config:app:set previewgenerator heightSizes --value="256"
+occ config:system:set preview_max_x --value 2048
+occ config:system:set preview_max_y --value 2048
+occ config:system:set jpeg_quality --value 60
+occ config:app:set preview jpeg_quality --value="60"
+```
