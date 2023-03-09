@@ -56,6 +56,7 @@ authentik
 nextcloud
 nextcloud-app
 nextcloud-web
+nextcloud-appdata
 code
 clamav
 elasticsearch
