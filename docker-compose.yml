@@ -37,7 +37,7 @@ services:
         limits:
           memory: 128M
         reservations:
-          memory: 64M
+          memory: 32M
     depends_on:
       - whoami
       - authentikapp
@@ -214,7 +214,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 2G
+          memory: 8G
         reservations:
           memory: 256M
 
@@ -288,7 +288,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1G
+          memory: 2G
         reservations:
           memory: 256M
 
@@ -304,7 +304,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 256M
+          memory: 4G
         reservations:
           memory: 128M
 
