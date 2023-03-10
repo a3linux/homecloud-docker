@@ -57,11 +57,31 @@ Q: Nextcloud preview halt the server with large amount of photos?
 Those Nextcloud preview generator app tuning might be helpful and improving the performance, but still very danger for huge amount of photos.
 
 ```
-occ config:app:set previewgenerator squareSizes --value="32 256"
-occ config:app:set previewgenerator widthSizes  --value="256 384"
-occ config:app:set previewgenerator heightSizes --value="256"
-occ config:system:set preview_max_x --value 2048
-occ config:system:set preview_max_y --value 2048
+occ config:app:set previewgenerator squareSizes --value="32 64 512"
+occ config:app:set previewgenerator widthSizes  --value="64 128 512"
+occ config:app:set previewgenerator heightSizes --value="64 256 512"
+occ config:system:set preview_max_x --value 512
+occ config:system:set preview_max_y --value 512
 occ config:system:set jpeg_quality --value 60
 occ config:app:set preview jpeg_quality --value="60"
 ```
+
+Q: How to reset all generated preview
+
+WARNING: This is not supported but it has been confirmed to work by multiple users. Proceed at your own risk. Always keep backups around.
+
+1. Remove the folder **your-nextcloud-data-directory/appdata_xxxxxxxx/preview**
+2. Optional: change parameters preview_max_x and preview_max_y in config.php (e.g., to 512), and change the previewgenerator app parameters heightSizes, squareSizes and widthSizes as per the README (or better yet, to a low value each, e.g. 512, 256 and 512 respectively)
+3. Run, this will reset generated previews in the database
+```
+occ files:scan-app-data 
+```
+4. Run, this will run very fast if you did step 2
+```
+occ preview:generate-all [user-id]
+```
+
+Q: Move Nextcloud appdata_xxxx folder to a separate location from Nextcloud data folder
+
+This is not official supported now, but there are lot of discussions online and practices from community.
+The simple way is to move the location of appdata folder to a separate one and use the symbol link in Nextcloud data folder.

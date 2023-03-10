@@ -79,11 +79,11 @@ case "${TARGET_APP}" in
         docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set trusted_proxies 1 --value "10.0.0.0/8"
         docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set trusted_proxies 2 --value "192.168.0.0/16"
         # Set preview providers
-        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:app:set previewgenerator squareSizes --value="32 256"
-        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:app:set previewgenerator widthSizes  --value="256 384"
-        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:app:set previewgenerator heightSizes --value="256"
-        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set preview_max_x --value="2048"
-        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set preview_max_y --value="2048"
+        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:app:set previewgenerator squareSizes --value="32 64 512"
+        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:app:set previewgenerator widthSizes  --value="64 128 512"
+        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:app:set previewgenerator heightSizes --value="64 256 512"
+        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set preview_max_x --value="512"
+        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set preview_max_y --value="512"
         docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set jpeg_quality --value="60"
         docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:app:set preview jpeg_quality --value="60"
         docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:delete enabledPreviewProviders
@@ -94,7 +94,7 @@ case "${TARGET_APP}" in
         docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set enabledPreviewProviders 4 --value="OC\\Preview\\TXT"
         docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set enabledPreviewProviders 5 --value="OC\\Preview\\OpenDocument"
         docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set enabledPreviewProviders 6 --value="OC\\Preview\\PDF"
-        docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set enabledPreviewProviders 7 --value="OC\\Preview\\HEIC"
+        #docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set enabledPreviewProviders 7 --value="OC\\Preview\\HEIC"
         #docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set enabledPreviewProviders 8 --value="OC\\Preview\\Movie"
         docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set preview_imaginary_url --value="http://imaginary:9000"
         docker exec -i -u www-data "${NC_CONTAINER_NAME}" php /var/www/html/occ config:system:set enable_previews --value=true --type=boolean
