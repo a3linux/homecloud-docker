@@ -85,3 +85,12 @@ Q: Move Nextcloud appdata_xxxx folder to a separate location from Nextcloud data
 
 This is not official supported now, but there are lot of discussions online and practices from community.
 The simple way is to move the location of appdata folder to a separate one and use the symbol link in Nextcloud data folder.
+
+Need this config, 'localstorage.allowsymlinks' => true
+
+```
+docker exec -it -u www-data homecloud_nextcloudapp php /var/www/html/occ config:system:set localstorage.allowsymlinks --value true --type bool
+```
+
+Verified. This does NOT work for AppData.
+There is a PR working on for relocate NextCloud AppData in the release 26 RC2. https://github.com/nextcloud/server/pull/36337/files

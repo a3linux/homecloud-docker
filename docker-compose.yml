@@ -116,7 +116,7 @@ services:
   authentikapp:
     container_name: homecloud_authentikapp
     profiles: ["dev", "prod"]
-    image: ghcr.io/goauthentik/server:2023.2
+    image: ghcr.io/goauthentik/server:2023.3
     restart: unless-stopped
     command: server
     ports:
@@ -149,7 +149,7 @@ services:
   authentikworker:
     container_name: homecloud_authentikworker
     profiles: ["dev", "prod"]
-    image: ghcr.io/goauthentik/server:2023.2
+    image: ghcr.io/goauthentik/server:2023.3
     restart: unless-stopped
     command: worker
     secrets:
@@ -214,7 +214,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 8G
+          memory: 4G
         reservations:
           memory: 256M
 
@@ -295,7 +295,7 @@ services:
   imaginary:
     container_name: homecloud_imaginary
     profiles: ["dev", "prod"]
-    image: nextcloud/aio-imaginary
+    image: nextcloud/aio-imaginary:beta
     restart: unless-stopped
     expose:
       - 9000
