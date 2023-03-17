@@ -8,3 +8,6 @@ The patched file,
 ```
 
 nextcloud-app-path is mostly the /var/www/html inside Nextcloud Docker container.
+
+This patch should be in PR https://github.com/nextcloud/server/pull/37155/files
+Should be released in Nextcloud 26 or 25.0.5(backport)
