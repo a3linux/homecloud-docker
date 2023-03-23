@@ -9,6 +9,7 @@ usage() {
     echo "  The filename should be homecloud.<env>, <env> indicates the deployment, can be dev | prod"
     echo "  -a <action>  start | stop | restart | pull"
     echo "  -b Database Only Docker-compose profile applied"
+    echo "  -c configuration file e.g. homecloud.prod"
     echo "  -d Deattach mode"
     echo "  -f additional docker-compose yml file, MUST be in service folder"
     echo "  -h Display this message"
@@ -79,26 +80,30 @@ if [ "$CLAMAV_SERVER_ENABLED" == "yes" ]; then
     PROFILES=" ${PROFILES} --profile clamav "
 fi
 
-if [ ! -z "${ADDITONAL_COMPOSE_FILE}" ]; then
-    PROFILES=" -f ${ADDITONAL_COMPOSE_FILE} ${PROFILES}"
+if [ "$CALIBRE_WEB_ENABLED" == "yes" ]; then
+    PROFILES=" ${PROFILES} --profile calibreweb "
+fi
+
+if [ -n "${ADDITONAL_COMPOSE_FILE}" ]; then
+    PROFILES=" -f ${ADDITONAL_COMPOSE_FILE} ${PROFILES} "
 fi
 
 case "${ACTION}" in
     start)
         if [ "${IS_DEATTACHED}" == "yes" ]; then
-            docker compose -f ${SERVICE_DESTINATION}/docker-compose.yml -f ${SERVICE_DESTINATION}/docker-compose.${TARGET_ENV}.yml ${PROFILES} up -d
+            docker compose -f "${SERVICE_DESTINATION}"/docker-compose.yml -f "${SERVICE_DESTINATION}"/docker-compose."${TARGET_ENV}".yml ${PROFILES} up -d
         else
-            docker compose -f ${SERVICE_DESTINATION}/docker-compose.yml -f ${SERVICE_DESTINATION}/docker-compose.${TARGET_ENV}.yml ${PROFILES} up
+            docker compose -f "${SERVICE_DESTINATION}"/docker-compose.yml -f "${SERVICE_DESTINATION}"/docker-compose."${TARGET_ENV}".yml ${PROFILES} up
         fi
         ;;
     restart)
-            docker compose -f ${SERVICE_DESTINATION}/docker-compose.yml -f ${SERVICE_DESTINATION}/docker-compose.${TARGET_ENV}.yml ${PROFILES} restart
+            docker compose -f "${SERVICE_DESTINATION}"/docker-compose.yml -f "${SERVICE_DESTINATION}"/docker-compose."${TARGET_ENV}".yml ${PROFILES} restart
         ;;
     stop)
-            docker compose -f ${SERVICE_DESTINATION}/docker-compose.yml -f ${SERVICE_DESTINATION}/docker-compose.${TARGET_ENV}.yml ${PROFILES} down
+            docker compose -f "${SERVICE_DESTINATION}"/docker-compose.yml -f "${SERVICE_DESTINATION}"/docker-compose."${TARGET_ENV}".yml ${PROFILES} down
         ;;
     pull)
-            docker compose -f ${SERVICE_DESTINATION}/docker-compose.yml -f ${SERVICE_DESTINATION}/docker-compose.${TARGET_ENV}.yml ${PROFILES} pull
+            docker compose -f "${SERVICE_DESTINATION}"/docker-compose.yml -f "${SERVICE_DESTINATION}"/docker-compose."${TARGET_ENV}".yml ${PROFILES} pull
             ;;
     *)
         error_exit

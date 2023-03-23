@@ -69,11 +69,13 @@ nextcloud-appdata
 code
 clamav
 elasticsearch
+calibreweb
 "
 DATAs="
 mariadb
 postgres
 nextcloud
+calibre
 "
 DSTs="
 bin
@@ -141,13 +143,15 @@ PRIMARY_CERT_PATH=/certs/${PRIMARY_CERT_FILE:=fullchain.pem}
 PRIMARY_PRIVATE_KEY_PATH=/certs/${PRIMARY_PRIVATE_KEY_FILE:=private.pem}
 AUTHENTIK_CERT_PATH=/certs/${AUTHENTIK_CERT_FILE:=fullchain.pem}
 AUTHENTIK_PRIVATE_KEY_PATH=/certs/${AUTHENTIK_PRIVATE_KEY_FILE:=private.pem}
-CODE_CERT_PATH=/certs/${PRIMARY_CERT_FILE:=fullchain.pem}
-CODE_PRIVATE_KEY_PATH=/certs/${PRIMARY_PRIVATE_KEY_FILE:=private.pem}
+CODE_CERT_PATH=/certs/${CODE_CERT_FILE:=fullchain.pem}
+CODE_PRIVATE_KEY_PATH=/certs/${CODE_PRIVATE_KEY_FILE:=private.pem}
+CALIBRE_WEB_CERT_PATH=/certs/${CALIBRE_WEB_CERT_FILE:=fullchain.pem}
+CALIBRE_WEB_PRIVATE_KEY_PATH=/certs/${CALIBRE_WEB_PRIVATE_KEY_FILE:=private.pem}
 
 echo -e "  ${colors[Cyan]}Update config files${colors[Color_Off]}"
 for conf in "${APPS_BASE}"/lb/conf.d/*.conf
 do
-    for find_to_replace in PRIMARY_SERVER_NAME AUTHENTIK_SERVER_NAME CODE_SERVER_NAME PRIMARY_CERT_PATH AUTHENTIK_CERT_PATH PRIMARY_PRIVATE_KEY_PATH AUTHENTIK_PRIVATE_KEY_PATH HTTPS_PORT CODE_CERT_PATH CODE_PRIVATE_KEY_PATH
+    for find_to_replace in PRIMARY_SERVER_NAME AUTHENTIK_SERVER_NAME CODE_SERVER_NAME PRIMARY_CERT_PATH AUTHENTIK_CERT_PATH PRIMARY_PRIVATE_KEY_PATH AUTHENTIK_PRIVATE_KEY_PATH HTTPS_PORT CODE_CERT_PATH CODE_PRIVATE_KEY_PATH CALIBRE_WEB_CERT_PATH CALIBRE_WEB_PRIVATE_KEY_PATH
     do
         sed -i -e "s|%${find_to_replace}%|${!find_to_replace}|g" "${conf}"
     done
@@ -339,6 +343,28 @@ mkdir -p "${APPS_BASE}"/elasticsearch/data
     printf "    volumes:\n";
     printf "      - %s:/usr/share/elasticsearch/data:rw\n" "${APPS_BASE}/elasticsearch/data";
 } >> "${HC_DC_ENV_FILE}"
+
+CALIBREWEB_ENV_TEMPLATE="${HC_PROGRAM_PATH}"/env_files/calibreweb.env
+CALIBREWEB_ENV_FILE="${SERVICE_DESTINATION}"/calibreweb.${TARGET_ENV}
+if [ -f "${CALIBREWEB_ENV_FILE}" ]; then
+    # File existed, not the first time
+    echo -e "   ${colors[Red]}${CALIBREWEB_ENV_FILE} ${colors[Yellow]}exists and will not update it to avoid configuration overwrite${colors[Color_Off]}"
+    echo -e "${colors[Yellow]}   !!! Please check and update ${CALIBREWEB_ENV_FILE} based on ${AUTHENTIK_ENV_TEMPLATE} !!!${colors[Color_Off]}"
+else
+    echo -e "  ${colors[Cyan]}Copy and update env file Calibre-Web.${TARGET_ENV}${colors[Color_Off]}"
+    cp -v "${CALIBREWEB_ENV_TEMPLATE}" "${CALIBREWEB_ENV_FILE}"
+fi
+echo -e "${colors[Cyan]}Generate Calibre Web services configuration and scripts${colors[Color_Off]}"
+{
+    printf "\n";
+    printf "  calibreweb:\n";
+    printf "    env_file: calibreweb.%s\n" "${TARGET_ENV}"
+    printf "    volumes:\n";
+    printf "      - %s:/config\n" "${APPS_BASE}/calibreweb";
+    printf "      - %s:/books\n" "${DATA_BASE}/calibre";
+} >> "${HC_DC_ENV_FILE}"
+
+echo -e "${colors[Cyan]}Generate Calibre admin configuration and scripts${colors[Color_Off]}"
 
 # Prepare the secrets files
 echo -e "${colors[Cyan]}Generate docker-compose secrets section${colors[Color_Off]}"
