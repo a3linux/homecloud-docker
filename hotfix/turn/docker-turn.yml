@@ -1,0 +1,36 @@
+version: "3.9"
+name: ncturn
+
+networks:
+  default:
+    name: homecloud
+    external: true
+
+services:
+  talk:
+    container_name: homecloud_talk
+    image: nextcloud/aio-talk
+    ports:
+      - 3478:3478/tcp
+      - 3478:3478/udp
+    secrets:
+      - talk_turn_secret
+      - talk_signaling_secret
+    environment:
+      TZ: "Asia/Singapore"
+      NC_DOMAIN: homecloud.local
+      TURN_SECRET: file:///run/secrets/talk_turn_secret
+      SIGNALING_SECRET: file:///run/secrets/talk_signaling_secret
+      TALK_PORT: 3478
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 128M
+
+secrets:
+  talk_turn_secret:
+    file: /vault/talk_turn_secret.txt
+  talk_signaling_secret:
+    file: /vault/talk_signaling_secret.txt
