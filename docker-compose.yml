@@ -188,7 +188,7 @@ services:
   nextcloudapp:
     container_name: homecloud_nextcloudapp
     profiles: ["dev", "prod"]
-    image: nextcloud:25-fpm-alpine
+    image: nextcloud:26-fpm-alpine
     restart: unless-stopped
     healthcheck:
       test: nc -z postgres 5432 || nc -z 127.0.0.1 9000 || exit 1
@@ -241,7 +241,7 @@ services:
   nextcloudcron:
     container_name: homecloud_nextcloudcron
     profiles: ["dev", "prod"]
-    image: nextcloud:25-fpm-alpine
+    image: nextcloud:26-fpm-alpine
     restart: unless-stopped
     entrypoint: /cron.sh
     depends_on:
@@ -354,7 +354,7 @@ services:
     secrets:
       - calibreweb_admin_password
     ports:
-      - 8082:8083
+      - 8083:8083
     expose:
       - 8083
     environment:
