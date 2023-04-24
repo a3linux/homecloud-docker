@@ -80,7 +80,7 @@ if [ "$CLAMAV_SERVER_ENABLED" == "yes" ]; then
     PROFILES=" ${PROFILES} --profile clamav "
 fi
 
-if [ "$CALIBRE_WEB_ENABLED" == "yes" ]; then
+if [ "$CALIBREWEB_ENABLED" == "yes" ]; then
     PROFILES=" ${PROFILES} --profile calibreweb "
 fi
 
