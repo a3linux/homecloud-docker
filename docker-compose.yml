@@ -116,7 +116,7 @@ services:
   authentikapp:
     container_name: homecloud_authentikapp
     profiles: ["dev", "prod"]
-    image: ghcr.io/goauthentik/server:2023.3
+    image: ghcr.io/goauthentik/server:2023.4
     restart: unless-stopped
     command: server
     ports:
@@ -149,7 +149,7 @@ services:
   authentikworker:
     container_name: homecloud_authentikworker
     profiles: ["dev", "prod"]
-    image: ghcr.io/goauthentik/server:2023.3
+    image: ghcr.io/goauthentik/server:2023.4
     restart: unless-stopped
     command: worker
     secrets:

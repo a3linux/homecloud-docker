@@ -88,23 +88,35 @@ if [ -n "${ADDITONAL_COMPOSE_FILE}" ]; then
     PROFILES=" -f ${ADDITONAL_COMPOSE_FILE} ${PROFILES} "
 fi
 
+DOCKER_CMD=$(which docker||true)
+DOCKER_COMPOSE_CMD=$(which docker-compose||true)
+EXECUTOR_CMD=""
+
+if [[ -n ${DOCKER_COMPOSE_CMD} ]] && [[ -x ${DOCKER_COMPOSE_CMD} ]]; then
+    EXECUTOR_CMD=${DOCKER_COMPOSE_CMD}
+elif [[ -n ${DOCKER_CMD} ]] && [[ -x ${DOCKER_CMD} ]]; then
+    EXECUTOR_CMD="${DOCKER_CMD} compose "
+else
+    EXECUTOR_CMD="docker compose "
+fi
+
 case "${ACTION}" in
     start)
         if [ "${IS_DEATTACHED}" == "yes" ]; then
-            docker compose -f "${SERVICE_DESTINATION}"/docker-compose.yml -f "${SERVICE_DESTINATION}"/docker-compose."${TARGET_ENV}".yml ${PROFILES} up -d
+            ${EXECUTOR_CMD} -f ${SERVICE_DESTINATION}/docker-compose.yml -f ${SERVICE_DESTINATION}/docker-compose.${TARGET_ENV}.yml ${PROFILES} up -d
         else
-            docker compose -f "${SERVICE_DESTINATION}"/docker-compose.yml -f "${SERVICE_DESTINATION}"/docker-compose."${TARGET_ENV}".yml ${PROFILES} up
+            ${EXECUTOR_CMD} -f ${SERVICE_DESTINATION}/docker-compose.yml -f ${SERVICE_DESTINATION}/docker-compose.${TARGET_ENV}.yml ${PROFILES} up
         fi
         ;;
     restart)
-            docker compose -f "${SERVICE_DESTINATION}"/docker-compose.yml -f "${SERVICE_DESTINATION}"/docker-compose."${TARGET_ENV}".yml ${PROFILES} restart
+        ${EXECUTOR_CMD} -f ${SERVICE_DESTINATION}/docker-compose.yml -f ${SERVICE_DESTINATION}/docker-compose.${TARGET_ENV}.yml ${PROFILES} restart
         ;;
     stop)
-            docker compose -f "${SERVICE_DESTINATION}"/docker-compose.yml -f "${SERVICE_DESTINATION}"/docker-compose."${TARGET_ENV}".yml ${PROFILES} down
+        ${EXECUTOR_CMD} -f ${SERVICE_DESTINATION}/docker-compose.yml -f ${SERVICE_DESTINATION}/docker-compose.${TARGET_ENV}.yml ${PROFILES} down
         ;;
     pull)
-            docker compose -f "${SERVICE_DESTINATION}"/docker-compose.yml -f "${SERVICE_DESTINATION}"/docker-compose."${TARGET_ENV}".yml ${PROFILES} pull
-            ;;
+        ${EXECUTOR_CMD} -f ${SERVICE_DESTINATION}/docker-compose.yml -f ${SERVICE_DESTINATION}/docker-compose.${TARGET_ENV}.yml ${PROFILES} pull
+        ;;
     *)
         error_exit
         ;;
