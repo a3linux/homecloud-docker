@@ -68,6 +68,7 @@ else
     BOOK_FOLDER_MOUNT=""
 fi
 
+docker pull lscr.io/linuxserver/calibre:latest
 docker run -d\
   --name=homecloud_calibre \
   --restart unless-stopped \
