@@ -130,6 +130,8 @@ acme.sh supports so many different modes to issue certificate. Go to [Here](http
 * Create databases by run <some_apth>/bin/create_databases.sh
 * Stop the service with <some_path>/bin/stop.dbonly.sh
 * Start the service with <some_path>/bin/start.sh and waiting for all service up
+* Use <some_path>/bin/start.daemon.sh to start the HomeCloud service as daemon(running background)
+    and <some_path>/bin/stop.sh to stop the service
 
 ### Setup services
 
