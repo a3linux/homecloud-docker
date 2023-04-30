@@ -9,6 +9,7 @@ usage() {
     echo "  The filename should be homecloud.<env>, <env> indicates the deployment, can be dev | prod"
     echo "  -a <action>  start | stop | restart | pull"
     echo "  -b Database Only Docker-compose profile applied"
+    echo "  -c configuration file e.g. homecloud.prod"
     echo "  -d Deattach mode"
     echo "  -f additional docker-compose yml file, MUST be in service folder"
     echo "  -h Display this message"
@@ -79,8 +80,12 @@ if [ "$CLAMAV_SERVER_ENABLED" == "yes" ]; then
     PROFILES=" ${PROFILES} --profile clamav "
 fi
 
-if [ ! -z "${ADDITONAL_COMPOSE_FILE}" ]; then
-    PROFILES=" -f ${ADDITONAL_COMPOSE_FILE} ${PROFILES}"
+if [ "$CALIBREWEB_ENABLED" == "yes" ]; then
+    PROFILES=" ${PROFILES} --profile calibreweb "
+fi
+
+if [ -n "${ADDITONAL_COMPOSE_FILE}" ]; then
+    PROFILES=" -f ${ADDITONAL_COMPOSE_FILE} ${PROFILES} "
 fi
 
 DOCKER_CMD=$(which docker||true)
@@ -104,14 +109,14 @@ case "${ACTION}" in
         fi
         ;;
     restart)
-            ${EXECUTOR_CMD} -f ${SERVICE_DESTINATION}/docker-compose.yml -f ${SERVICE_DESTINATION}/docker-compose.${TARGET_ENV}.yml ${PROFILES} restart
+        ${EXECUTOR_CMD} -f ${SERVICE_DESTINATION}/docker-compose.yml -f ${SERVICE_DESTINATION}/docker-compose.${TARGET_ENV}.yml ${PROFILES} restart
         ;;
     stop)
-            ${EXECUTOR_CMD} -f ${SERVICE_DESTINATION}/docker-compose.yml -f ${SERVICE_DESTINATION}/docker-compose.${TARGET_ENV}.yml ${PROFILES} down
+        ${EXECUTOR_CMD} -f ${SERVICE_DESTINATION}/docker-compose.yml -f ${SERVICE_DESTINATION}/docker-compose.${TARGET_ENV}.yml ${PROFILES} down
         ;;
     pull)
-            ${EXECUTOR_CMD} -f ${SERVICE_DESTINATION}/docker-compose.yml -f ${SERVICE_DESTINATION}/docker-compose.${TARGET_ENV}.yml ${PROFILES} pull
-            ;;
+        ${EXECUTOR_CMD} -f ${SERVICE_DESTINATION}/docker-compose.yml -f ${SERVICE_DESTINATION}/docker-compose.${TARGET_ENV}.yml ${PROFILES} pull
+        ;;
     *)
         error_exit
         ;;

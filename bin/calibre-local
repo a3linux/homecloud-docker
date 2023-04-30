@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+declare -A colors
+colors[Color_Off]='\033[0m'
+colors[Red]='\033[0;31m'
+colors[Green]='\033[0;32m'
+colors[Yellow]='\033[0;33m'
+colors[Blue]='\033[0;34m'
+colors[Purple]='\033[0;35m'
+colors[Cyan]='\033[0;36m'
+colors[White]='\033[0;37m'
+
+SETUP_ENV_FULLPATH=""
+BOOK_FOLDER=""
+usage() {
+    echo -e "Usage: ${colors[Cyan]}$0 -c some_path/homecloud.<env>${colors[Color_Off]} [-b book_folder]"
+    echo -e "  Please provide the homecloud service environment file, e.g. ${colors[Cyan]}<some_path>/homecloud.dev${colors[Color_Off]}"
+    echo -e "  Copy the ${colors[Red]}homecloud.env${colors[Color_Off]} to start, the filename should be ${colors[Purple]}homecloud.<env>${colors[Color_Off]}, <env> should be ${colors[Purple]}dev | prod${colors[Color_Off]}"
+    echo -e "  -b book_folder ${colors[Red]}Use additional book folder${colors[Color_Off]}, it will map to the container /mnt/books for import books to Calibre"
+    echo -e " The calibre service will be available at the port 8080 or 8181 on the host and when the calibre web server is enabled, it is available at the host port 8081. If you have any port conflict on the host, please try to change this script at line 78 - 80 !!!"
+}
+
+error_exit() {
+    usage
+    exit 1
+}
+
+while getopts "c:b:h" arg
+do
+    case ${arg} in
+        c)
+            SETUP_ENV_FULLPATH=${OPTARG}
+            ;;
+        b)
+            BOOK_FOLDER=${OPTARG}
+            ;;
+        h | *)
+            usage
+            exit 0
+            ;;
+    esac
+done
+shift $((OPTIND-1))
+
+if [ -z "${SETUP_ENV_FULLPATH}" ] || [ ! -f "${SETUP_ENV_FULLPATH}" ]; then
+    error_exit
+fi
+
+SETUP_ENV_FILENAME=$(basename "${SETUP_ENV_FULLPATH}")
+TARGET_ENV=${SETUP_ENV_FILENAME##*.}
+filename=${SETUP_ENV_FILENAME%.*}
+
+if [ "${filename}" != "homecloud" ]; then
+    error_exit
+fi
+
+source "${SETUP_ENV_FULLPATH}"
+
+if [ ! -d "${SERVICE_DESTINATION}" ]; then
+    echo -e "!!!Folder ${colors[Red]}${SERVICE_DESTINATION} ${colors[Color_Off]}does not exist or can not access!!!"
+    error_exit
+fi
+
+GID=$(id -g)
+
+if [[ -n ${BOOK_FOLDER} ]]; then
+    BOOK_FOLDER_MOUNT=" -v ${BOOK_FOLDER}:/mnt/books "
+else
+    BOOK_FOLDER_MOUNT=""
+fi
+
+docker pull lscr.io/linuxserver/calibre:latest
+docker run -d\
+  --name=homecloud_calibre \
+  --restart unless-stopped \
+  --security-opt seccomp=unconfined `#optional` \
+  -e PUID=$UID \
+  -e PGID=$GID \
+  -e TZ=Asia/Singapore \
+  -p 8080:8080 \
+  -p 8181:8181 \
+  -p 8081:8081 \
+  -v ${DATA_BASE}/calibre:/config \
+  ${BOOK_FOLDER_MOUNT} \
+  lscr.io/linuxserver/calibre:latest
+# vim: set filetype=bash

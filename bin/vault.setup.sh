@@ -14,6 +14,7 @@ postgres_authentik_password.txt
 authentik_secret_key.txt
 postgres_nextcloud_password.txt
 nextcloud_admin_password.txt
+calibreweb_admin_password.txt
 "
 
 usage() {
