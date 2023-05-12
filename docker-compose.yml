@@ -366,3 +366,21 @@ services:
           memory: 512M
         reservations:
           memory: 128M
+
+  jellyfin:
+    container_name: homecloud_jellyfin
+    profiles: ["jellyfin"]
+    image: lscr.io/linuxserver/jellyfin
+    healthcheck:
+      test: curl --fail http://localhost:8086/ || exit 1
+    restart: unless-stopped
+    ports:
+      - 8086:8086
+    environment:
+      TZ: "Asia/Singapore"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 128M

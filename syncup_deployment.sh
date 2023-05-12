@@ -70,12 +70,14 @@ code
 clamav
 elasticsearch
 calibreweb
+jellyfin
 "
 DATAs="
 mariadb
 postgres
 nextcloud
 calibre
+jellyfin
 "
 DSTs="
 bin
@@ -147,18 +149,25 @@ CODE_CERT_PATH=/certs/${CODE_CERT_FILE:=fullchain.pem}
 CODE_PRIVATE_KEY_PATH=/certs/${CODE_PRIVATE_KEY_FILE:=private.pem}
 CALIBREWEB_CERT_PATH=/certs/${CALIBREWEB_CERT_FILE:=fullchain.pem}
 CALIBREWEB_PRIVATE_KEY_PATH=/certs/${CALIBREWEB_PRIVATE_KEY_FILE:=private.pem}
+JELLYFIN_CERT_PATH=/certs/${JELLYFIN_CERT_FILE:=fullchain.pem}
+JELLYFIN_PRIVATE_KEY_PATH=/certs/${JELLYFIN_PRIVATE_KEY_FILE:=private.pem}
 
 echo -e "  ${colors[Cyan]}Update config files${colors[Color_Off]}"
 for conf in "${APPS_BASE}"/lb/conf.d/*.conf
 do
-    for find_to_replace in PRIMARY_SERVER_NAME AUTHENTIK_SERVER_NAME CODE_SERVER_NAME CALIBREWEB_SERVER_NAME PRIMARY_CERT_PATH AUTHENTIK_CERT_PATH PRIMARY_PRIVATE_KEY_PATH AUTHENTIK_PRIVATE_KEY_PATH HTTPS_PORT CODE_CERT_PATH CODE_PRIVATE_KEY_PATH CALIBREWEB_CERT_PATH CALIBREWEB_PRIVATE_KEY_PATH
+    for find_to_replace in PRIMARY_SERVER_NAME AUTHENTIK_SERVER_NAME CODE_SERVER_NAME CALIBREWEB_SERVER_NAME JELLYFIN_SERVER_NAME PRIMARY_CERT_PATH AUTHENTIK_CERT_PATH PRIMARY_PRIVATE_KEY_PATH AUTHENTIK_PRIVATE_KEY_PATH HTTPS_PORT CODE_CERT_PATH CODE_PRIVATE_KEY_PATH CALIBREWEB_CERT_PATH CALIBREWEB_PRIVATE_KEY_PATH JELLYFIN_CERT_PATH JELLYFIN_PRIVATE_KEY_PATH
     do
         sed -i -e "s|%${find_to_replace}%|${!find_to_replace}|g" "${conf}"
     done
 done
 if [ "${CODE_SERVER_ENABLED}" != "yes" ]; then
-    # There might be no code container running
     rm -f "${APPS_BASE}"/lb/conf.d/*-code.conf
+fi
+if [ "${CALIBREWEB_ENABLED}"  != "yes" ];  then
+    rm -f "${APPS_BASE}"/lb/conf.d/*-calibreweb.conf
+fi
+if [ "${JELLYFIN_ENABLED}" != "yes" ]; then
+    rm -f "${APPS_BASE}"/lb/conf.d/*-jellyfin.conf
 fi
 
 echo -e "  ${colors[Cyan]}Generate lb docker-compose config${colors[Color_Off]}"
