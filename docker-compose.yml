@@ -9,7 +9,7 @@ networks:
 services:
   whoami:
     container_name: homecloud_whoami
-    profiles: ["dev", "prod"]
+    profiles: ["coreservices"]
     image: traefik/whoami
     restart: unless-stopped
     ports:
@@ -23,7 +23,7 @@ services:
 
   lb:
     container_name: homecloud_lb
-    profiles: ["dev", "prod"]
+    profiles: ["coreservices"]
     image: axistools/nginx-ldap:alpine
     restart: unless-stopped
     healthcheck:
@@ -45,7 +45,7 @@ services:
 
   mariadb:
     container_name: homecloud_mariadb
-    profiles: ["dev", "prod", "dbonly"]
+    profiles: ["dbonly", "coreservices"]
     image: mariadb:10
     restart: unless-stopped
     deploy:
@@ -70,7 +70,7 @@ services:
 
   postgres:
     container_name: homecloud_postgres
-    profiles: ["dev", "prod", "dbonly"]
+    profiles: ["dbonly", "coreservices"]
     image: postgres:15-alpine
     restart: unless-stopped
     secrets:
@@ -94,7 +94,7 @@ services:
 
   redis:
     container_name: homecloud_redis
-    profiles: ["dev", "prod", "dbonly"]
+    profiles: ["coreservices", "dbonly"]
     image: redis
     command: redis-server --save 300 1 --loglevel warning #--requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
     restart: unless-stopped
@@ -115,8 +115,8 @@ services:
 
   authentikapp:
     container_name: homecloud_authentikapp
-    profiles: ["dev", "prod"]
-    image: ghcr.io/goauthentik/server:2023.4
+    profiles: ["coreservices"]
+    image: ghcr.io/goauthentik/server:2023.5
     restart: unless-stopped
     command: server
     ports:
@@ -148,8 +148,8 @@ services:
 
   authentikworker:
     container_name: homecloud_authentikworker
-    profiles: ["dev", "prod"]
-    image: ghcr.io/goauthentik/server:2023.4
+    profiles: ["coreservices"]
+    image: ghcr.io/goauthentik/server:2023.5
     restart: unless-stopped
     command: worker
     secrets:
@@ -187,7 +187,7 @@ services:
 
   nextcloudapp:
     container_name: homecloud_nextcloudapp
-    profiles: ["dev", "prod"]
+    profiles: ["coreservices"]
     image: nextcloud:26-fpm-alpine
     restart: unless-stopped
     healthcheck:
@@ -220,7 +220,7 @@ services:
 
   nextcloudweb:
     container_name: homecloud_nextcloudweb
-    profiles: ["dev", "prod"]
+    profiles: ["coreservices"]
     image: nginx:alpine
     restart: unless-stopped
     healthcheck:
@@ -240,7 +240,7 @@ services:
 
   nextcloudcron:
     container_name: homecloud_nextcloudcron
-    profiles: ["dev", "prod"]
+    profiles: ["coreservices"]
     image: nextcloud:26-fpm-alpine
     restart: unless-stopped
     entrypoint: /cron.sh
@@ -294,7 +294,7 @@ services:
 
   imaginary:
     container_name: homecloud_imaginary
-    profiles: ["dev", "prod"]
+    profiles: ["coreservices"]
     image: nextcloud/aio-imaginary:beta
     restart: unless-stopped
     expose:
@@ -327,7 +327,7 @@ services:
 
   elasticsearch:
     container_name: homecloud_elasticsearch
-    profiles: ["dev", "prod"]
+    profiles: ["coreservices"]
     image: nextcloud/aio-fulltextsearch
     restart: unless-stopped
     expose:
@@ -375,7 +375,7 @@ services:
       test: curl --fail http://localhost:8086/ || exit 1
     restart: unless-stopped
     ports:
-      - 8086:8086
+      - 8096:8096
     environment:
       TZ: "Asia/Singapore"
     deploy:

@@ -2,25 +2,25 @@
 # HomeCloud backup hourly
 #
 if [ "$(id -u)" -eq 0 ]; then
-    exec sudo -H -u %DEPLOYMENT_USER% $0 "$@"
+    exec sudo -H -u {{DEPLOYMENT_USER}} $0 "$@"
     echo "This is never reached.";
 fi
 
 FIND_CMD=$(which find)
 
 # HomeCloud service might not be deployed, skip the job
-if [ ! -f %SERVICE_DESTINATION%/%SETUP_ENV_FILENAME% ]; then
+if [ ! -f {{SERVICE_DESTINATION}}/{{SETUP_ENV_FILENAME}} ]; then
     exit 0
 fi
 
-. %SERVICE_DESTINATION%/%SETUP_ENV_FILENAME%
+. {{SERVICE_DESTINATION}}/{{SETUP_ENV_FILENAME}}
 
 # backup Databases hourly
 for dbengine in postgres mariadb
 do
     ${SERVICE_DESTINATION}/bin/backup_databases.sh -e "${dbengine}" -d homecloud_${dbengine} -o "${DATA_BASE}"/"${dbengine}"
     if [ $? -ne 0 ]; then
-        /usr/bin/echo -e "Subject: HomeCloud database backup ALERT: $dbengine backup failure\n\n: Timestamp: $(date)\r\nDetails: backup all databases hourly job failed\n\n\n$*" | msmtp %ALERT_EMAIL%
+        /usr/bin/echo -e "Subject: HomeCloud database backup ALERT: $dbengine backup failure\n\n: Timestamp: $(date)\r\nDetails: backup all databases hourly job failed\n\n\n$*" | msmtp {{ALERT_EMAIL}}
     fi
     ${FIND_CMD} "${DATA_BASE}"/"${dbengine}" -mtime +4 -exec rm -f {} \;
 done
