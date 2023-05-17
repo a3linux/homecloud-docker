@@ -11,10 +11,13 @@ SECRETS_FILES="
 mariadb_root_password.txt
 postgres_psql_password.txt
 postgres_authentik_password.txt
+authentik_akadmin_password.txt
 authentik_secret_key.txt
 postgres_nextcloud_password.txt
 nextcloud_admin_password.txt
 calibreweb_admin_password.txt
+talk_turn_secret.txt
+talk_signaling_secret.txt
 "
 
 usage() {

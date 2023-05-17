@@ -2,7 +2,8 @@
 set -a
 SETUP_ENV_FULLPATH=""
 PROFILES=""
-ADDITONAL_COMPOSE_FILE=""
+ADDITIONAL_COMPOSE_FILE="" # User append compose file
+#EXTRA_COMPOSE_FILE="" # Customized compose file assigned from homecloud.<env>
 declare -A colors
 colors[Color_Off]='\033[0m'
 colors[Red]='\033[0;31m'
@@ -35,7 +36,7 @@ while getopts "f::c:a:bdh" arg
 do
     case ${arg} in
         f)
-            ADDITONAL_COMPOSE_FILE=${OPTARG}
+            ADDITIONAL_COMPOSE_FILE=${OPTARG}
             ;;
         c)
             SETUP_ENV_FULLPATH=${OPTARG}
@@ -99,8 +100,12 @@ if [ "$JELLYFIN_ENABLED" == "yes" ]; then
     PROFILES=" ${PROFILES} --profile jellyfin "
 fi
 
-if [ -n "${ADDITONAL_COMPOSE_FILE}" ]; then
-    PROFILES=" -f ${ADDITONAL_COMPOSE_FILE} ${PROFILES} "
+if [ -n "${ADDITIONAL_COMPOSE_FILE}" ]; then
+    PROFILES=" -f ${ADDITIONAL_COMPOSE_FILE} ${PROFILES} "
+fi
+
+if [ -n "${EXTRA_COMPOSE_FILE}" ]; then
+    PROFILES=" -f ${EXTRA_COMPOSE_FILE} ${PROFILES}"
 fi
 
 DOCKER_CMD=$(which docker||true)

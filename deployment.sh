@@ -152,6 +152,7 @@ AUTHENTIK_MEDIA="${APPS_BASE}/authentik/media"
 AUTHENTIK_TEMPLATES="${APPS_BASE}/authentik/templates"
 AUTHENTIK_USER_SETTINGS_PY="${APPS_BASE}/authentik/data/user_settings.py"
 AUTHENTIK_CERTS="${APPS_BASE}/authentik/certs"
+AUTHENTIK_ENV_FILE="authentik.${TARGET_ENV}"
 NEXTCLOUD_WEBROOT="${APPS_BASE}/nextcloud"
 NEXTCLOUD_DATA="${DATA_BASE}/nextcloud"
 NEXTCLOUD_WWW_CONF="${APPS_BASE}/nextcloud-app/www.conf"
@@ -163,6 +164,12 @@ mkdir -p "${APPS_BASE}"
 mkdir -p "${DATA_BASE}"
 create_subfolders ${APPS_BASE} CORESERVICES_APP_FOLDERS
 create_subfolders ${DATA_BASE} CORESERVICES_DATA_FOLDERS
+if [ -f "${SERVICE_DESTINATION}/${AUTHENTIK_ENV_FILE}" ]; then
+    echo -e "    ${colors[Cyan]}authentik.${TARGET_ENV} ${colors[Yellow]}existed, skip copy and if you want to update it please do it manually!${colors[Color_Off]}"
+else
+    echo -e "    ${colors[Cyan]}Copy env file authentik.${TARGET_ENV}${colors[Color_Off]}"
+    cp "${HOMECLOUD_REPOS_PATH}/env_files/authentik.env" "${SERVICE_DESTINATION}/${AUTHENTIK_ENV_FILE}"
+fi
 ${TEMPLATER} "${HOMECLOUD_REPOS_PATH}/docker/core-services.yml" > ${DOCKER_COMPOSE_ENV_YML}
 
 CORE_SERVICES_CONF_FILES=("lb/nginx.conf" "lb/conf.d/00-default.conf" "lb/conf.d/01-authentik.conf" "authentik/data/user_settings.py" "authentik/dist/custom.css" "lb/webroot/404.html" "lb/webroot/50x.html" "lb/webroot/index.html" "nextcloud-app/www.conf" "nextcloud-web/nginx.conf")
@@ -185,12 +192,12 @@ if [ "${CODE_SERVER_ENABLED}" == "yes" ]; then
     create_subfolders ${APPS_BASE} CODE_APP_FOLDERS
     ${TEMPLATE} "${HOMECLOUD_REPOS_PATH}/conf/lb/conf.d/02-code.conf" > "${APPS_BASE}/lb/conf.d/02-code.conf"
     if [ -f "${SERVICE_DESTINATION}/${CODE_ENV_FILE}" ]; then
-        echo -e "  ${colors[Cyan]}code.${TARGET_ENV} existed, skip copy and if you want to update it please do it manually!${colors[Color_Off]}"
+        echo -e "   ${colors[Cyan]}code.${TARGET_ENV} existed, skip copy and if you want to update it please do it manually!${colors[Color_Off]}"
     else
-        echo -e "  ${colors[Cyan]}Copy env file code.${TARGET_ENV}${colors[Color_Off]}"
+        echo -e "   ${colors[Cyan]}Copy env file code.${TARGET_ENV}${colors[Color_Off]}"
         ${TEMPLATER} "${HOMECLOUD_REPOS_PATH}/env_files/code.env" > "${SERVICE_DESTINATION}/${CODE_ENV_FILE}"
     fi
-    echo -e "  ${colors[Cyan]}Generating code volumes${colors[Color_Off]}"
+    echo -e "   ${colors[Cyan]}Generating code volumes${colors[Color_Off]}"
     ${TEMPLATER} "${HOMECLOUD_REPOS_PATH}/docker/code.yml" >> ${DOCKER_COMPOSE_ENV_YML}
 else
     if [ -f "${APPS_BASE}/lb/conf.d/02-code.conf" ]; then
@@ -204,7 +211,7 @@ CLAMAV_DATA_PATH="${APPS_BASE}/clamav"
 if [ "${CLAMAV_SERVER_ENABLED}" == "yes" ]; then
     echo -e "${colors[Green]}  ClamAV setup${colors[Color_Off]}"
     create_subfolders ${APPS_BASE} CLAMAV_APP_FOLDERS
-    echo -e "  ${colors[Cyan]}Generating ClamAV volumes${colors[Color_Off]}"
+    echo -e "    ${colors[Cyan]}Generating ClamAV volumes${colors[Color_Off]}"
     ${TEMPLATER} "${HOMECLOUD_REPOS_PATH}/docker/clamav.yml" >> ${DOCKER_COMPOSE_ENV_YML}
 fi
 
@@ -222,13 +229,13 @@ if [ "${CALIBREWEB_ENABLED}" == "yes" ]; then
     create_subfolders ${DATA_BASE} CALIBREWEB_DATA_FOLDERS
     ${TEMPLATE} "${HOMECLOUD_REPOS_PATH}/conf/lb/conf.d/03-calibreweb.conf" > "${APPS_BASE}/lb/conf.d/03-calibreweb.conf"
     if [ -f "${SERVICE_DESTINATION}/${CALIBREWEB_ENV_FILE}" ]; then
-        echo -e "   ${colors[Red]}${CALIBREWEB_ENV_FILE} ${colors[Yellow]}exists and will not update it to avoid configuration overwrite${colors[Color_Off]}"
+        echo -e "    ${colors[Red]}${CALIBREWEB_ENV_FILE} ${colors[Yellow]}exists and will not update it to avoid configuration overwrite${colors[Color_Off]}"
         echo -e "${colors[Yellow]}   !!! Please check and update ${CALIBREWEB_ENV_FILE}!${colors[Color_Off]}"
     else
-        echo -e "  ${colors[Cyan]}Generating calibre-web ${CALIBREWEB_ENV_FILE}${colors[Color_Off]}"
+        echo -e "   ${colors[Cyan]}Generating calibre-web ${CALIBREWEB_ENV_FILE}${colors[Color_Off]}"
         ${TEMPLATER} "${HOMECLOUD_REPOS_PATH}/env_files/calibre.env" > "${SERVICE_DESTINATION}/${CALIBREWEB_ENV_FILE}"
     fi
-    echo -e "  ${colors[Cyan]}Generating calibre-web volumes${colors[Color_Off]}"
+    echo -e "   ${colors[Cyan]}Generating calibre-web volumes${colors[Color_Off]}"
     ${TEMPLATER} "${HOMECLOUD_REPOS_PATH}/docker/calibreweb.yml" >> "${DOCKER_COMPOSE_ENV_YML}"
 else
     if [ -f "${APPS_BASE}/lb/conf.d/03-calibreweb.conf" ]; then
@@ -250,10 +257,10 @@ if [ "${JELLYFIN_ENABLED}" == "yes" ]; then
     create_subfolders ${DATA_BASE} JELLYFIN_DATA_FOLDERS
     ${TEMPLATER} "${HOMECLOUD_REPOS_PATH}/conf/lb/conf.d/04-jellyfin.conf" > "${APPS_BASE}/lb/conf.d/04-jellyfin.conf"
     if [ -f "${SERVICE_DESTINATION}/${JELLYFIN_ENV_FILE}" ]; then
-        echo -e "   ${colors[Red]}${JELLYFIN_ENV_FILE} ${colors[Yellow]}exists and will not update it to avoid configuration overwrite${colors[Color_Off]}"
-        echo -e "${colors[Yellow]}   !!! Please check and update ${CALIBREWEB_ENV_FILE} based on ${AUTHENTIK_ENV_TEMPLATE} !!!${colors[Color_Off]}"
+        echo -e "    ${colors[Cyan]}${JELLYFIN_ENV_FILE} ${colors[Yellow]}exists and will not update it to avoid configuration overwrite${colors[Color_Off]}"
+        echo -e "${colors[Yellow]}    !!! Please check and update ${CALIBREWEB_ENV_FILE} !${colors[Color_Off]}"
     else
-        echo -e "  ${colors[Cyan]}Generating jellyfin ${JELLYFIN_ENV_FILE}${colors[Color_Off]}"
+        echo -e "   ${colors[Cyan]}Generating jellyfin ${JELLYFIN_ENV_FILE}${colors[Color_Off]}"
         ${TEMPLATER} "${HOMECLOUD_REPOS_PATH}/env_files/jellyfin.env" > "${SERVICE_DESTINATION}/${JELLYFIN_ENV_FILE}"
     fi
     ${TEMPLATER} "${HOMECLOUD_REPOS_PATH}/docker/jellyfin.yml" >> "${DOCKER_COMPOSE_ENV_YML}"
@@ -264,6 +271,12 @@ else
 fi
 
 # Talk
+TALK_TURN_SECRET=$(cat "${VAULT_BASE}/talk_turn_secret.txt")
+TALK_SIGNALING_SECRET=$(cat "${VAULT_BASE}/talk_signaling_secret.txt")
+if [ "${TALK_SERVER_ENABLED}" == "yes" ]; then
+    echo -e "${colors[Green]}  Talk setup${colors[Color_Off]}"
+    ${TEMPLATER} "${HOMECLOUD_REPOS_PATH}/docker/talk.yml" >> "${DOCKER_COMPOSE_ENV_YML}"
+fi
 
 # Verify and generate new secrets
 echo -e "${colors[Cyan]}Generate docker-compose secrets section${colors[Color_Off]}"

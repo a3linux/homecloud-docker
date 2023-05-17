@@ -22,12 +22,14 @@ services:
       - {{REDIS_DATA_PATH}}:/data
 
   authentikapp:
+    env_file: {{AUTHENTIK_ENV_FILE}}
     volumes:
       - {{AUTHENTIK_MEDIA}}:/media
       - {{AUTHENTIK_TEMPLATES}}:/templates
       - {{AUTHENTIK_USER_SETTINGS_PY}}:/data/user_settings.py:ro
 
   authentikworker:
+    env_file: {{AUTHENTIK_ENV_FILE}}
     volumes:
       - {{AUTHENTIK_MEDIA}}:/media
       - {{AUTHENTIK_TEMPLATES}}:/templates

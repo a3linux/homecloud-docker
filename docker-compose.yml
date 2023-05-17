@@ -264,10 +264,7 @@ services:
       - 3478:3478/udp
     environment:
       TZ: "Asia/Singapore"
-      NC_DOMAIN:
-      TURN_SECRET:
-      SIGNALING_SECRET:
-      JANUS_API_KEY:
+      TALK_PORT: 3478
     deploy:
       resources:
         limits:
