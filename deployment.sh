@@ -130,6 +130,9 @@ done
 echo -e "${colors[Green]}    - HomeCloud service ${colors[Blue]}${SERVICE_DESTINATION}/docker-compose.yml ${colors[Color_Off]}"
 rsync -a "${HOMECLOUD_REPOS_PATH}/docker-compose.yml" "${SERVICE_DESTINATION}/docker-compose.yml"
 
+# Generate/Update vault
+"${SERVICE_DESTINATION_BIN}"/vault.setup.sh -a "${VAULT_BASE}"
+
 # Core Services
 CORESERVICES_APP_FOLDERS=("lb" "lb/conf.d" "lb/certs" "lb/webroot" "mariadb" "postgres" "redis" "authentik/media" "authentik/templates" "authentik/certs" "authentik/extra" "authentik/data" "authentik/dist" "nextcloud" "nextcloud-app" "nextcloud-web" "elasticsearch")
 CORESERVICES_DATA_FOLDERS=("mariadb" "postgres" "nextcloud")
@@ -281,6 +284,6 @@ fi
 # Verify and generate new secrets
 echo -e "${colors[Cyan]}Generate docker-compose secrets section${colors[Color_Off]}"
 echo "" >> "${DOCKER_COMPOSE_ENV_YML}"
-"${SERVICE_DESTINATION_BIN}"/vault.setup.sh -a "${VAULT_BASE}" >> "${DOCKER_COMPOSE_ENV_YML}"
+"${SERVICE_DESTINATION_BIN}"/vault.setup.sh -o -a "${VAULT_BASE}" >> "${DOCKER_COMPOSE_ENV_YML}"
 
 echo -e "${colors[Green]}Complete prepare HomeCloud deployment environment ${colors[Blue]}${TARGET_ENV}${colors[Color_Off]}"
