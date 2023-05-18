@@ -10,9 +10,11 @@ This small project is directly from the thread [here](https://www.reddit.com/r/s
 * Database(MariaDB, Postgres and Redis)
 * Imaginary
 * ElasticSearch
-* Collabora
+* Collabora Office(Nextcloud Office)
 * ClamAV(disabled by default)
 * Nextcloud talk(disabled by default)
+* Calibre-web and Calibre(local only)
+* Jellyfin
 
 ## Background and design
 
