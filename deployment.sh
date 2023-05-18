@@ -127,10 +127,11 @@ do
     ${TEMPLATER} "${HOMECLOUD_REPOS_PATH}/${cf}" > "${SERVICE_DESTINATION}/${cf}"
 done
 
-echo -e "${colors[Green]}    - HomeCloud service ${colors[Blue]}${SERVICE_DESTINATION}/docker-compose.yml ${colors[Color_Off]}"
+echo -e "${colors[Green]}    - HomeCloud service major docker compose file ${colors[Blue]}${SERVICE_DESTINATION}/docker-compose.yml ${colors[Color_Off]}"
 rsync -a "${HOMECLOUD_REPOS_PATH}/docker-compose.yml" "${SERVICE_DESTINATION}/docker-compose.yml"
 
 # Generate/Update vault
+echo -e "${colors[Green]}  Generate/update secrets in ${colors[Blue]}${VAULT_BASE} ${colors[Color_Off]}"
 "${SERVICE_DESTINATION_BIN}"/vault.setup.sh -a "${VAULT_BASE}"
 
 # Core Services
@@ -168,7 +169,7 @@ mkdir -p "${DATA_BASE}"
 create_subfolders ${APPS_BASE} CORESERVICES_APP_FOLDERS
 create_subfolders ${DATA_BASE} CORESERVICES_DATA_FOLDERS
 if [ -f "${SERVICE_DESTINATION}/${AUTHENTIK_ENV_FILE}" ]; then
-    echo -e "    ${colors[Cyan]}authentik.${TARGET_ENV} ${colors[Yellow]}existed, skip copy and if you want to update it please do it manually!${colors[Color_Off]}"
+    echo -e "    ${colors[Cyan]}authentik.${TARGET_ENV} ${colors[Yellow]}existed, skip copy and you have to update it manually!${colors[Color_Off]}"
 else
     echo -e "    ${colors[Cyan]}Copy env file authentik.${TARGET_ENV}${colors[Color_Off]}"
     cp "${HOMECLOUD_REPOS_PATH}/env_files/authentik.env" "${SERVICE_DESTINATION}/${AUTHENTIK_ENV_FILE}"
@@ -195,7 +196,7 @@ if [ "${CODE_SERVER_ENABLED}" == "yes" ]; then
     create_subfolders ${APPS_BASE} CODE_APP_FOLDERS
     ${TEMPLATE} "${HOMECLOUD_REPOS_PATH}/conf/lb/conf.d/02-code.conf" > "${APPS_BASE}/lb/conf.d/02-code.conf"
     if [ -f "${SERVICE_DESTINATION}/${CODE_ENV_FILE}" ]; then
-        echo -e "   ${colors[Cyan]}code.${TARGET_ENV} existed, skip copy and if you want to update it please do it manually!${colors[Color_Off]}"
+        echo -e "   ${colors[Cyan]}code.${TARGET_ENV} existed, skip copy you have to update it manually!${colors[Color_Off]}"
     else
         echo -e "   ${colors[Cyan]}Copy env file code.${TARGET_ENV}${colors[Color_Off]}"
         ${TEMPLATER} "${HOMECLOUD_REPOS_PATH}/env_files/code.env" > "${SERVICE_DESTINATION}/${CODE_ENV_FILE}"
@@ -232,8 +233,7 @@ if [ "${CALIBREWEB_ENABLED}" == "yes" ]; then
     create_subfolders ${DATA_BASE} CALIBREWEB_DATA_FOLDERS
     ${TEMPLATE} "${HOMECLOUD_REPOS_PATH}/conf/lb/conf.d/03-calibreweb.conf" > "${APPS_BASE}/lb/conf.d/03-calibreweb.conf"
     if [ -f "${SERVICE_DESTINATION}/${CALIBREWEB_ENV_FILE}" ]; then
-        echo -e "    ${colors[Red]}${CALIBREWEB_ENV_FILE} ${colors[Yellow]}exists and will not update it to avoid configuration overwrite${colors[Color_Off]}"
-        echo -e "${colors[Yellow]}   !!! Please check and update ${CALIBREWEB_ENV_FILE}!${colors[Color_Off]}"
+        echo -e "    ${colors[Red]}${CALIBREWEB_ENV_FILE} ${colors[Yellow]}existed, skip copy and you have to update it manually${colors[Color_Off]}"
     else
         echo -e "   ${colors[Cyan]}Generating calibre-web ${CALIBREWEB_ENV_FILE}${colors[Color_Off]}"
         ${TEMPLATER} "${HOMECLOUD_REPOS_PATH}/env_files/calibre.env" > "${SERVICE_DESTINATION}/${CALIBREWEB_ENV_FILE}"
@@ -260,8 +260,7 @@ if [ "${JELLYFIN_ENABLED}" == "yes" ]; then
     create_subfolders ${DATA_BASE} JELLYFIN_DATA_FOLDERS
     ${TEMPLATER} "${HOMECLOUD_REPOS_PATH}/conf/lb/conf.d/04-jellyfin.conf" > "${APPS_BASE}/lb/conf.d/04-jellyfin.conf"
     if [ -f "${SERVICE_DESTINATION}/${JELLYFIN_ENV_FILE}" ]; then
-        echo -e "    ${colors[Cyan]}${JELLYFIN_ENV_FILE} ${colors[Yellow]}exists and will not update it to avoid configuration overwrite${colors[Color_Off]}"
-        echo -e "${colors[Yellow]}    !!! Please check and update ${CALIBREWEB_ENV_FILE} !${colors[Color_Off]}"
+        echo -e "    ${colors[Cyan]}${JELLYFIN_ENV_FILE} ${colors[Yellow]}existed and skip copy, you have to update it manually${colors[Color_Off]}"
     else
         echo -e "   ${colors[Cyan]}Generating jellyfin ${JELLYFIN_ENV_FILE}${colors[Color_Off]}"
         ${TEMPLATER} "${HOMECLOUD_REPOS_PATH}/env_files/jellyfin.env" > "${SERVICE_DESTINATION}/${JELLYFIN_ENV_FILE}"
@@ -282,7 +281,7 @@ if [ "${TALK_SERVER_ENABLED}" == "yes" ]; then
 fi
 
 # Verify and generate new secrets
-echo -e "${colors[Cyan]}Generate docker-compose secrets section${colors[Color_Off]}"
+echo -e "${colors[Cyan]}  Generate docker-compose secrets section${colors[Color_Off]}"
 echo "" >> "${DOCKER_COMPOSE_ENV_YML}"
 "${SERVICE_DESTINATION_BIN}"/vault.setup.sh -o -a "${VAULT_BASE}" >> "${DOCKER_COMPOSE_ENV_YML}"
 
