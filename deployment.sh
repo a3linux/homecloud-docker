@@ -77,29 +77,19 @@ MYSELF_PATH=$(dirname "${mypath}")
 HOMECLOUD_REPOS_PATH="${MYSELF_PATH}"
 TEMPLATER="${HOMECLOUD_REPOS_PATH}/templater.sh"
 DOCKER_COMPOSE_ENV_YML="${SERVICE_DESTINATION}/docker-compose.${TARGET_ENV}.yml"
-
 SERVICE_DESTINATION_BIN="${SERVICE_DESTINATION}/bin"
-START_SH="${SERVICE_DESTINATION_BIN}/start.sh"
-START_DAEMON_SH="${SERVICE_DESTINATION_BIN}/start.daemon.sh"
-STOP_SH="${SERVICE_DESTINATION_BIN}/stop.sh"
-PULL_SH="${SERVICE_DESTINATION_BIN}/pull.sh"
-RESTART_SH="${SERVICE_DESTINATION_BIN}/restart.sh"
-START_DBONLY_SH="${SERVICE_DESTINATION_BIN}/start.dbonly.sh"
-STOP_DBONLY_SH="${SERVICE_DESTINATION_BIN}/stop.dbonly.sh"
+SH_SCRIPTS=("start.sh" "stop.sh" "start.daemon.sh" "pull.sh" "start.dbonly.sh" "stop.dbonly.sh")
 
 # Homecloud service
 echo -e "${colors[Green]}  HomeCloud service setup in ${colors[Blue]}${SERVICE_DESTINATION} ${colors[Color_Off]}"
 echo -e "${colors[Green]}    - HomeCloud service bin ${colors[Blue]}${SERVICE_DESTINATION_BIN} ${colors[Color_Off]}"
 mkdir -p "${SERVICE_DESTINATION}/bin"
 rsync -ar "${HOMECLOUD_REPOS_PATH}/bin/" "${SERVICE_DESTINATION}/bin/"
-echo "${SERVICE_DESTINATION_BIN}/homecloud-service.sh -c ${SERVICE_DESTINATION}/${SETUP_ENV_FILENAME} -a start" > "${START_SH}"
-echo "${SERVICE_DESTINATION_BIN}/homecloud-service.sh -c ${SERVICE_DESTINATION}/${SETUP_ENV_FILENAME} -a restart" > "${RESTART_SH}"
-echo "${SERVICE_DESTINATION_BIN}/homecloud-service.sh -c ${SERVICE_DESTINATION}/${SETUP_ENV_FILENAME} -a stop" > "${STOP_SH}"
-echo "${SERVICE_DESTINATION_BIN}/homecloud-service.sh -c ${SERVICE_DESTINATION}/${SETUP_ENV_FILENAME} -a start -d" > "${START_DAEMON_SH}"
-echo "${SERVICE_DESTINATION_BIN}/homecloud-service.sh -c ${SERVICE_DESTINATION}/${SETUP_ENV_FILENAME} -a start -b" > "${START_DBONLY_SH}"
-echo "${SERVICE_DESTINATION_BIN}/homecloud-service.sh -c ${SERVICE_DESTINATION}/${SETUP_ENV_FILENAME} -a stop -b" > "${STOP_DBONLY_SH}"
-echo "${SERVICE_DESTINATION_BIN}/homecloud-service.sh -c ${SERVICE_DESTINATION}/${SETUP_ENV_FILENAME} -a pull" > "${PULL_SH}"
-chmod +x "${START_SH}" "${STOP_SH}" "${START_DAEMON_SH}" "${START_DBONLY_SH}" "${STOP_DBONLY_SH}" "${RESTART_SH}" "${PULL_SH}"
+for sf in ${SH_SCRIPTS[@]}
+do
+    ${TEMPLATER} "${HOMECLOUD_REPOS_PATH}/bin/${sf}" > "${SERVICE_DESTINATION_BIN}/${sf}"
+    chmod +x "${SERVICE_DESTINATION_BIN}/${sf}"
+done
 
 CREATE_DATABASES="${SERVICE_DESTINATION_BIN}/create_databases.sh"
 CREATE_POSTGRES="${SERVICE_DESTINATION_BIN}/create_postgresdb.sh"
