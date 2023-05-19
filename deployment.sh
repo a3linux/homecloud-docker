@@ -120,10 +120,6 @@ done
 echo -e "${colors[Green]}    - HomeCloud service major docker compose file ${colors[Blue]}${SERVICE_DESTINATION}/docker-compose.yml ${colors[Color_Off]}"
 rsync -a "${HOMECLOUD_REPOS_PATH}/docker-compose.yml" "${SERVICE_DESTINATION}/docker-compose.yml"
 
-# Generate/Update vault
-echo -e "${colors[Green]}  Generate/update secrets in ${colors[Blue]}${VAULT_BASE} ${colors[Color_Off]}"
-"${SERVICE_DESTINATION_BIN}"/vault.setup.sh -a "${VAULT_BASE}"
-
 # Core Services
 CORESERVICES_APP_FOLDERS=("lb" "lb/conf.d" "lb/certs" "lb/webroot" "mariadb" "postgres" "redis" "authentik/media" "authentik/templates" "authentik/certs" "authentik/extra" "authentik/data" "authentik/dist" "nextcloud" "nextcloud-app" "nextcloud-web" "elasticsearch")
 CORESERVICES_DATA_FOLDERS=("mariadb" "postgres" "nextcloud")
@@ -165,6 +161,10 @@ else
     cp "${HOMECLOUD_REPOS_PATH}/env_files/authentik.env" "${SERVICE_DESTINATION}/${AUTHENTIK_ENV_FILE}"
 fi
 ${TEMPLATER} "${HOMECLOUD_REPOS_PATH}/docker/core-services.yml" > ${DOCKER_COMPOSE_ENV_YML}
+
+# Generate/Update vault
+echo -e "${colors[Green]}  Generate/update secrets in ${colors[Blue]}${VAULT_BASE} ${colors[Color_Off]}"
+"${SERVICE_DESTINATION_BIN}"/vault.setup.sh -a "${VAULT_BASE}"
 
 CORE_SERVICES_CONF_FILES=("lb/nginx.conf" "lb/conf.d/00-default.conf" "lb/conf.d/01-authentik.conf" "authentik/data/user_settings.py" "authentik/dist/custom.css" "lb/webroot/404.html" "lb/webroot/50x.html" "lb/webroot/index.html" "nextcloud-app/www.conf" "nextcloud-web/nginx.conf")
 for cf in ${CORE_SERVICES_CONF_FILES[@]}
@@ -226,7 +226,7 @@ if [ "${CALIBREWEB_ENABLED}" == "yes" ]; then
         echo -e "    ${colors[Red]}${CALIBREWEB_ENV_FILE} ${colors[Yellow]}existed, skip copy and you have to update it manually${colors[Color_Off]}"
     else
         echo -e "   ${colors[Cyan]}Generating calibre-web ${CALIBREWEB_ENV_FILE}${colors[Color_Off]}"
-        ${TEMPLATER} "${HOMECLOUD_REPOS_PATH}/env_files/calibre.env" > "${SERVICE_DESTINATION}/${CALIBREWEB_ENV_FILE}"
+        ${TEMPLATER} "${HOMECLOUD_REPOS_PATH}/env_files/calibreweb.env" > "${SERVICE_DESTINATION}/${CALIBREWEB_ENV_FILE}"
     fi
     echo -e "   ${colors[Cyan]}Generating calibre-web volumes${colors[Color_Off]}"
     ${TEMPLATER} "${HOMECLOUD_REPOS_PATH}/docker/calibreweb.yml" >> "${DOCKER_COMPOSE_ENV_YML}"
