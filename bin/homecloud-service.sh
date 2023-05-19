@@ -1,18 +1,30 @@
 #!/usr/bin/env bash
+set -a
 SETUP_ENV_FULLPATH=""
 PROFILES=""
-ADDITONAL_COMPOSE_FILE=""
+ADDITIONAL_COMPOSE_FILE="" # User append compose file
+#EXTRA_COMPOSE_FILE="" # Customized compose file assigned from homecloud.<env>
+declare -A colors
+colors[Color_Off]='\033[0m'
+colors[Red]='\033[0;31m'
+colors[Green]='\033[0;32m'
+colors[Yellow]='\033[0;33m'
+colors[Blue]='\033[0;34m'
+colors[Purple]='\033[0;35m'
+colors[Cyan]='\033[0;36m'
+colors[White]='\033[0;37m'
+
 usage() {
-    echo "Usage: $0 -c some_path/homecloud.<env> -a <action> -f <additional_compose.yml> -b -c -t -d -o"
-    echo "  Please provide the homecloud service environment file, e.g. some_path/homecloud.dev"
-    echo "  You COULD create such file based on templates/homecloud.env.template"
-    echo "  The filename should be homecloud.<env>, <env> indicates the deployment, can be dev | prod"
-    echo "  -a <action>  start | stop | restart | pull"
-    echo "  -b Database Only Docker-compose profile applied"
-    echo "  -c configuration file e.g. homecloud.prod"
-    echo "  -d Deattach mode"
-    echo "  -f additional docker-compose yml file, MUST be in service folder"
-    echo "  -h Display this message"
+    echo -e "Usage: ${colors[Cyan]}$0 -c some_path/homecloud.<env> -a <action> -f <additional_compose.yml> -b -c -t -d -o${colors[Color_Off]}"
+    echo -e "  ${colors[Yellow]}Please provide the homecloud service environment file, e.g. some_path/homecloud.dev"
+    echo -e "  You COULD create such file based on templates/homecloud.env.template"
+    echo -e "  The filename should be homecloud.<env>, <env> indicates the deployment, can be dev | prod"
+    echo -e "  -a <action>  start | stop | restart | pull"
+    echo -e "  -b Database Only Docker-compose profile applied"
+    echo -e "  -c configuration file e.g. homecloud.prod"
+    echo -e "  -d Deattach mode"
+    echo -e "  -f additional docker-compose yml file, MUST be in service folder"
+    echo -e "  -h Display this message${colors[Color_Off]}"
 }
 
 error_exit() {
@@ -24,7 +36,7 @@ while getopts "f::c:a:bdh" arg
 do
     case ${arg} in
         f)
-            ADDITONAL_COMPOSE_FILE=${OPTARG}
+            ADDITIONAL_COMPOSE_FILE=${OPTARG}
             ;;
         c)
             SETUP_ENV_FULLPATH=${OPTARG}
@@ -32,7 +44,7 @@ do
         a)
             ACTION=${OPTARG}
             if  [ "${ACTION}" != "start" ] && [ "${ACTION}" != "stop" ] && [ "${ACTION}" != "restart" ] && [ "${ACTION}" != "pull" ]; then
-                echo "Action can be ONLY start | stop | restart | pull"
+                echo -e "${colors[Red]}Action can be ONLY start | stop | restart | pull${colors[Color_Off]}"
                 error_exit
             fi
             ;;
@@ -65,7 +77,7 @@ source "${SETUP_ENV_FULLPATH}"
 if [ "${IS_DBONLY}" == "yes" ]; then
     PROFILES=" --profile dbonly "
 else
-    PROFILES=" ${PROFILES} --profile ${TARGET_ENV}"
+    PROFILES=" ${PROFILES} --profile coreservices"
 fi
 
 if [ "$CODE_SERVER_ENABLED" == "yes" ]; then
@@ -84,8 +96,16 @@ if [ "$CALIBREWEB_ENABLED" == "yes" ]; then
     PROFILES=" ${PROFILES} --profile calibreweb "
 fi
 
-if [ -n "${ADDITONAL_COMPOSE_FILE}" ]; then
-    PROFILES=" -f ${ADDITONAL_COMPOSE_FILE} ${PROFILES} "
+if [ "$JELLYFIN_ENABLED" == "yes" ]; then
+    PROFILES=" ${PROFILES} --profile jellyfin "
+fi
+
+if [ -n "${ADDITIONAL_COMPOSE_FILE}" ]; then
+    PROFILES=" -f ${ADDITIONAL_COMPOSE_FILE} ${PROFILES} "
+fi
+
+if [ -n "${EXTRA_COMPOSE_FILE}" ]; then
+    PROFILES=" -f ${EXTRA_COMPOSE_FILE} ${PROFILES}"
 fi
 
 DOCKER_CMD=$(which docker||true)

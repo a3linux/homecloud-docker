@@ -1,0 +1,6 @@
+{{SERVICES_PLACEHOLDER}}
+  jellyfin:
+    env_file: {{JELLYFIN_ENV_FILE}}
+    volumes:
+      - {{JELLYFIN_CONFIG_PATH}}:/config
+      - {{JELLYFIN_DATA_PATH}}:/data

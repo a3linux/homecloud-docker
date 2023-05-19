@@ -1,0 +1,4 @@
+{{SERVICES_PLACEHOLDER}}
+  clamav:
+    volumes:
+      - {{CLAMAV_DATA_PATH}}:/var/lib/clamav:rw

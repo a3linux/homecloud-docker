@@ -1,0 +1,5 @@
+{{SERVICES_PLACEHOLDER}}
+  calibreweb:
+    env_file: {{CODE_ENV_FILE}}
+    volumes:
+      - {{CODE_FONTS_PATH}}:/opt/cool/systemplate/tmpfonts:rw
