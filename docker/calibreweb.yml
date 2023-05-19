@@ -1,6 +1,6 @@
 {{SERVICES_PLACEHOLDER}}
   calibreweb:
-    env_file: {{CILIBREWEB_ENV_FILE}}
+    env_file: {{CALIBREWEB_ENV_FILE}}
     volumes:
       - {{CALIBREWEB_CONFIG_PATH}}:/config
       - {{CALIBREWEB_DATA_PATH}}:/books
