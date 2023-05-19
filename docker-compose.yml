@@ -369,7 +369,7 @@ services:
     profiles: ["jellyfin"]
     image: lscr.io/linuxserver/jellyfin
     healthcheck:
-      test: curl --fail http://localhost:8086/ || exit 1
+      test: curl --fail http://localhost:8096/ || exit 1
     restart: unless-stopped
     ports:
       - 8096:8096
