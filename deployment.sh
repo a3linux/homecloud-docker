@@ -184,7 +184,7 @@ CODE_PRIVATE_KEY_PATH="/certs/${CODE_PRIVATE_KEY_FILE:=private.pem}"
 if [ "${CODE_SERVER_ENABLED}" == "yes" ]; then
     echo -e "${colors[Green]}  Code setup${colors[Color_Off]}"
     create_subfolders ${APPS_BASE} CODE_APP_FOLDERS
-    ${TEMPLATE} "${HOMECLOUD_REPOS_PATH}/conf/lb/conf.d/02-code.conf" > "${APPS_BASE}/lb/conf.d/02-code.conf"
+    ${TEMPLATER} "${HOMECLOUD_REPOS_PATH}/conf/lb/conf.d/02-code.conf" > "${APPS_BASE}/lb/conf.d/02-code.conf"
     if [ -f "${SERVICE_DESTINATION}/${CODE_ENV_FILE}" ]; then
         echo -e "   ${colors[Cyan]}code.${TARGET_ENV} existed, skip copy you have to update it manually!${colors[Color_Off]}"
     else
@@ -221,7 +221,7 @@ if [ "${CALIBREWEB_ENABLED}" == "yes" ]; then
     echo -e "${colors[Green]}  Calibre-Web setup${colors[Color_Off]}"
     create_subfolders ${APPS_BASE} CALIBREWEB_APP_FOLDERS
     create_subfolders ${DATA_BASE} CALIBREWEB_DATA_FOLDERS
-    ${TEMPLATE} "${HOMECLOUD_REPOS_PATH}/conf/lb/conf.d/03-calibreweb.conf" > "${APPS_BASE}/lb/conf.d/03-calibreweb.conf"
+    ${TEMPLATER} "${HOMECLOUD_REPOS_PATH}/conf/lb/conf.d/03-calibreweb.conf" > "${APPS_BASE}/lb/conf.d/03-calibreweb.conf"
     if [ -f "${SERVICE_DESTINATION}/${CALIBREWEB_ENV_FILE}" ]; then
         echo -e "    ${colors[Red]}${CALIBREWEB_ENV_FILE} ${colors[Yellow]}existed, skip copy and you have to update it manually${colors[Color_Off]}"
     else
