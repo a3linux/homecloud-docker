@@ -78,7 +78,7 @@ HOMECLOUD_REPOS_PATH="${MYSELF_PATH}"
 TEMPLATER="${HOMECLOUD_REPOS_PATH}/templater.sh"
 DOCKER_COMPOSE_ENV_YML="${SERVICE_DESTINATION}/docker-compose.${TARGET_ENV}.yml"
 SERVICE_DESTINATION_BIN="${SERVICE_DESTINATION}/bin"
-SH_SCRIPTS=("start.sh" "stop.sh" "start.daemon.sh" "pull.sh" "start.dbonly.sh" "stop.dbonly.sh")
+SH_SCRIPTS=("start.sh" "stop.sh" "start.daemon.sh" "pull.sh" "start.dbonly.sh" "stop.dbonly.sh" "restart.sh")
 
 # Homecloud service
 echo -e "${colors[Green]}  HomeCloud service setup in ${colors[Blue]}${SERVICE_DESTINATION} ${colors[Color_Off]}"
