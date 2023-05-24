@@ -105,7 +105,7 @@ if [ -n "${ADDITIONAL_COMPOSE_FILE}" ]; then
 fi
 
 if [ -n "${EXTRA_COMPOSE_FILE}" ]; then
-    PROFILES=" -f ${EXTRA_COMPOSE_FILE} ${PROFILES}"
+    PROFILES=" -f ${SERVICE_DESTINATION}/${EXTRA_COMPOSE_FILE} ${PROFILES}"
 fi
 
 DOCKER_CMD=$(which docker||true)
