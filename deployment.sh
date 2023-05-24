@@ -237,13 +237,14 @@ else
 fi
 
 # jellyfin
-JELLYFIN_APP_FOLDERS=("jellyfin")
-JELLYFIN_DATA_FOLDERS=("jellyfin")
+JELLYFIN_APP_FOLDERS=("jellyfin" "xteve")
+JELLYFIN_DATA_FOLDERS=("jellyfin" "xteve")
 JELLYFIN_ENV_FILE="jellyfin.${TARGET_ENV}"
 JELLYFIN_CERT_PATH=/certs/${JELLYFIN_CERT_FILE:=fullchain.pem}
 JELLYFIN_PRIVATE_KEY_PATH=/certs/${JELLYFIN_PRIVATE_KEY_FILE:=private.pem}
 JELLYFIN_CONFIG_PATH="${APPS_BASE}/jellyfin"
 JELLYFIN_DATA_PATH="${DATA_BASE}/jellyfin"
+XTEVE_CONF_PATH="${DATA_BASE}/xteve"
 if [ "${JELLYFIN_ENABLED}" == "yes" ]; then
     echo -e "${colors[Green]}  Jellyfin setup${colors[Color_Off]}"
     create_subfolders ${APPS_BASE} JELLYFIN_APP_FOLDERS

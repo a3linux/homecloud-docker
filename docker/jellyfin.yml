@@ -4,3 +4,7 @@
     volumes:
       - {{JELLYFIN_CONFIG_PATH}}:/config
       - {{JELLYFIN_DATA_PATH}}:/data
+
+  xteve:
+    volumes:
+      - {{XTEVE_CONF_PATH}}:/home/xteve/conf
