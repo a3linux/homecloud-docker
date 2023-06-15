@@ -259,6 +259,7 @@ services:
     container_name: homecloud_talk
     profiles: ["talk"]
     image: nextcloud/aio-talk
+    restart: unless-stopped
     ports:
       - 3478:3478/tcp
       - 3478:3478/udp
