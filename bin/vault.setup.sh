@@ -27,6 +27,7 @@ nextcloud_admin_password.txt
 calibreweb_admin_password.txt
 talk_turn_secret.txt
 talk_signaling_secret.txt
+talk_internal_secret.txt
 "
 
 usage() {

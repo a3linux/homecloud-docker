@@ -265,6 +265,7 @@ fi
 # Talk
 TALK_TURN_SECRET=$(cat "${VAULT_BASE}/talk_turn_secret.txt")
 TALK_SIGNALING_SECRET=$(cat "${VAULT_BASE}/talk_signaling_secret.txt")
+TALK_INTERNAL_SECRET=$(cat "${VAULT_BASE}/talk_internal_secret.txt")
 if [ "${TALK_SERVER_ENABLED}" == "yes" ]; then
     echo -e "${colors[Green]}  Talk setup${colors[Color_Off]}"
     ${TEMPLATER} "${HOMECLOUD_REPOS_PATH}/docker/talk.yml" >> "${DOCKER_COMPOSE_ENV_YML}"
