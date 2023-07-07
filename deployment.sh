@@ -119,6 +119,7 @@ done
 
 echo -e "${colors[Green]}    - HomeCloud service major docker compose file ${colors[Blue]}${SERVICE_DESTINATION}/docker-compose.yml ${colors[Color_Off]}"
 rsync -a "${HOMECLOUD_REPOS_PATH}/docker-compose.yml" "${SERVICE_DESTINATION}/docker-compose.yml"
+rsync -a "${HOMECLOUD_REPOS_PATH}/docker-compose.syslog.yml" "${SERVICE_DESTINATION}/docker-compose.syslog.yml"
 
 # Core Services
 CORESERVICES_APP_FOLDERS=("lb" "lb/conf.d" "lb/certs" "lb/webroot" "mariadb" "postgres" "redis" "authentik/media" "authentik/templates" "authentik/certs" "authentik/extra" "authentik/data" "authentik/dist" "nextcloud" "nextcloud-app" "nextcloud-web" "elasticsearch")
