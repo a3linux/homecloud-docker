@@ -3,7 +3,7 @@
 VAULT_PATH=""
 DBNAME=""
 DBUSER=""
-DBCONTAINER=""
+DATABASE_CONTAINER_NAME=""
 
 usage() {
     echo "Usage: $0 -n DATABASE_NAME -u DATABASE_USER -s VAULT_PATH -d DATABASE_CONTAINER_NAME"
@@ -27,7 +27,7 @@ do
             VAULT_PATH=${OPTARG}
             ;;
         d)
-            DBCONTAINER=${OPTARG}
+            DATABASE_CONTAINER_NAME=${OPTARG}
             ;;
         h | *)
             usage
@@ -37,7 +37,7 @@ do
 done
 shift $((OPTIND-1))
 
-if [ -z "${VAULT_PATH}" ] || [ -z "${DBNAME}" ] || [ -z "${DBUSER}" ] || [ -z "${DBCONTAINER}" ]; then
+if [ -z "${VAULT_PATH}" ] || [ -z "${DBNAME}" ] || [ -z "${DBUSER}" ] || [ -z "${DATABASE_CONTAINER_NAME}" ]; then
     error_exit
 fi
 
@@ -45,7 +45,7 @@ DBPASSWD_FILE="mariadb_${DBUSER}_password.txt"
 
 ROOT_PASSWD=$(docker exec -i ${DATABASE_CONTAINER_NAME} cat /run/secrets/mariadb_root_password)
 if [ -z "${ROOT_PASSWD}" ]; then
-    echo "Failed to fetch MariaDB root password from container homecloud_mariadb"
+    echo "Failed to fetch MariaDB root password from container ${DATABASE_CONTAINER_NAME}"
     error_exit
 fi
 
@@ -63,5 +63,5 @@ rm -f ${SQL_FILE}
     printf "GRANT ALL PRIVILEGES ON %s.* TO \'%s\'@\'%%\' IDENTIFIED BY \'%s\';\n" "${DBNAME}" "${DBUSER}" "${DBPASSWD}";
 } > ${SQL_FILE}
 
-cat "${SQL_FILE}" | docker exec -i "${DBCONTAINER}" mariadb --user=root --password="${ROOT_PASSWD}"
+cat "${SQL_FILE}" | docker exec -i "${DATABASE_CONTAINER_NAME}" mariadb --user=root --password="${ROOT_PASSWD}"
 rm -f ${SQL_FILE}
