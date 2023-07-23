@@ -15,7 +15,7 @@ This is from the [Github issue](https://github.com/BookStackApp/BookStack/issues
 		const loginShowing = document.querySelector('a[href$="/login"]') !== null;
 		const leftPanel = document.querySelector("div.tri-layout-left");
 		const rightPanel = document.querySelector("div.tri-layout-right");
-        const leftActivity = document.querySelector("#recent-activity");leftActivity.innerHTML = "";
+        const leftActivity = document.querySelector("#recent-activity");
         if (loginShowing && leftActivity) {
             //leftActivity.style.visibility = 'hidden';
             leftActivity.innerHTML = "";
@@ -23,7 +23,7 @@ This is from the [Github issue](https://github.com/BookStackApp/BookStack/issues
 		if (loginShowing && leftPanel) {
             leftPanel.style.display = 'none';
             leftPanel.innerHTML = "";
-		} 
+		}
         if (loginShowing && rightPanel) {
             rightPanel.style.display = 'none';
             rightPanel.innerHTML = "";
