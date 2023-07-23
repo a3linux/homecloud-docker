@@ -1,0 +1,91 @@
+# This file, when named as ".env" in the root of your BookStack install
+# folder, is used for the core configuration of the application.
+# By default this file contains the most common required options but
+# a full list of options can be found in the '.env.example.complete' file.
+
+# NOTE: If any of your values contain a space or a hash you will need to
+# wrap the entire value in quotes. (eg. MAIL_FROM_NAME="BookStack Mailer")
+APP_DEBUG=false
+# Application key
+# Used for encryption where needed.
+# Run `php artisan key:generate` to generate a valid key.
+# Something generated from the bookstack init
+APP_KEY=base64:Ekn5F+OMuwBzUDg2rUDmfCd+/BALwMjepT4td0BMjx4=
+
+# Application URL
+# This must be the root URL that you want to host BookStack on.
+# All URLs in BookStack will be generated using this value
+# to ensure URLs generated are consistent and secure.
+# If you change this in the future you may need to run a command
+# to update stored URLs in the database. Command example:
+# php artisan bookstack:update-url https://old.example.com https://new.example.com
+APP_URL=https://<BOOKSTACK_URL>
+
+# Database details
+DB_HOST='mariadb'
+DB_PORT='3306'
+DB_DATABASE='bookstack'
+DB_USERNAME='bookstack'
+DB_PASSWORD=''
+
+# Mail system to use
+# Can be 'smtp' or 'sendmail'
+MAIL_DRIVER=smtp
+
+# Mail sender details
+MAIL_FROM_NAME="BookStack"
+MAIL_FROM=bookstack@example.com
+
+# SMTP mail options
+# These settings can be checked using the "Send a Test Email"
+# feature found in the "Settings > Maintenance" area of the system.
+# For more detailed documentation on mail options, refer to:
+# https://www.bookstackapp.com/docs/admin/email-webhooks/#email-configuration
+MAIL_HOST=localhost
+MAIL_PORT=587
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_ENCRYPTION=null
+
+# Set authentication method to be saml2
+AUTH_METHOD=saml2
+# Control if BookStack automatically initiates login via your SAML system if it's the only authentication method.
+# Prevents the need for the user to click the "Login with x" button on the login page.
+# Setting this to true enables auto-initiation.
+AUTH_AUTO_INITIATE=true
+# Set the display name to be shown on the login button.
+# (Login with <name>)
+SAML2_NAME=HomeCloudAuth
+# Name of the attribute which provides the user's email address
+SAML2_EMAIL_ATTRIBUTE=email
+# Name of the attribute to use as an ID for the SAML user.
+SAML2_EXTERNAL_ID_ATTRIBUTE=uid
+# Enable SAML group sync.
+SAML2_USER_TO_GROUPS=true
+# Set the attribute from which BookStack will read groups names from.
+# You will need to rename your roles in Bookstack to match your groups in authentik.
+SAML2_GROUP_ATTRIBUTE=http://schemas.xmlsoap.org/claims/Group
+# Name of the attribute(s) to use for the user's display name
+# Can have multiple attributes listed, separated with a '|' in which
+# case those values will be joined with a space.
+# Example: SAML2_DISPLAY_NAME_ATTRIBUTES=firstName|lastName
+# Defaults to the ID value if not found.
+SAML2_DISPLAY_NAME_ATTRIBUTES=http://schemas.microsoft.com/ws/2008/06/identity/claims/windowsaccountname
+# Identity Provider entityID URL
+SAML2_IDP_ENTITYID=https://auth.homecloud.local
+#:443/api/v3/providers/saml/1/metadata/?download
+#https://auth.homecloud.local/api/v3/providers/saml/1/metadata/?download
+# Auto-load metadata from the IDP
+# Setting this to true negates the need to specify the next three options
+# With true it is failed to have SSO/SAML agianst Authentik, so we use manually setup
+SAML2_AUTOLOAD_METADATA=false
+# Identity Provider single-sign-on service URL
+# Not required if using the autoload option above.
+SAML2_IDP_SSO=https://<AUTHENTIK_URL>/application/saml/<BOOKSTACK-APP-SLUG>/sso/binding/redirect/
+
+# Identity Provider single-logout-service URL
+# Not required if using the autoload option above.
+# Not required if your identity provider does not support SLS.
+SAML2_IDP_SLO=https://<AUTHENTIK_URL>/if/session-end/<BOOKSTACK-APP-SLUG>/
+
+SAML2_IDP_x509=<The content of the certificate from Authentik>
