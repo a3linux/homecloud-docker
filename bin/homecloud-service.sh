@@ -100,6 +100,10 @@ if [ "$JELLYFIN_ENABLED" == "yes" ]; then
     PROFILES=" ${PROFILES} --profile jellyfin "
 fi
 
+if [ "$BOOKSTACK_ENABLED" == "yes" ]; then
+    PROFILES=" ${PROFILES} --profile bookstack "
+fi
+
 if [ -n "${ADDITIONAL_COMPOSE_FILE}" ]; then
     PROFILES=" -f ${ADDITIONAL_COMPOSE_FILE} ${PROFILES} "
 fi

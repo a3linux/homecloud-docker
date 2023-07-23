@@ -18,6 +18,7 @@ MYSELF_PATH=$(dirname "${mypath}")
 
 SECRETS_FILES="
 mariadb_root_password.txt
+mariadb_bookstack_password.txt
 postgres_psql_password.txt
 postgres_authentik_password.txt
 authentik_akadmin_password.txt
@@ -28,6 +29,7 @@ calibreweb_admin_password.txt
 talk_turn_secret.txt
 talk_signaling_secret.txt
 talk_internal_secret.txt
+bookstack_admin_password.txt
 "
 
 usage() {

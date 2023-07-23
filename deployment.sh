@@ -97,13 +97,14 @@ CREATE_MARIADB="${SERVICE_DESTINATION_BIN}/create_mariadb.sh"
 echo "#!/usr/bin/env bash" > "${CREATE_DATABASES}"
 # PostgreSQL
 if [ -x "${CREATE_POSTGRES}" ]; then
-    echo -e "${colors[Green]}    - Generate PostgreSQL creat script.${colors[Color_Off]}"
-    echo "${CREATE_POSTGRES} -n authentik -u authentik -s ${VAULT_BASE} -d homecloud_postgres"  >> "${CREATE_DATABASES}"
+    echo -e "${colors[Green]}    - Generate PostgreSQL create script.${colors[Color_Off]}"
+    echo "${CREATE_POSTGRES} -n authentik -u authentik -s ${VAULT_BASE} -d homecloud_postgres" >> "${CREATE_DATABASES}"
     echo "${CREATE_POSTGRES} -n nextcloud -u nextcloud -s ${VAULT_BASE} -d homecloud_postgres" >> "${CREATE_DATABASES}"
 fi
-# MariaDB(not used yet)
+# MariaDB
 if [ -x "${CREATE_MARIADB}" ]; then
-    echo -e "${colors[Green]}    - No MariaDB!${colors[Color_Off]}"
+    echo -e "${colors[Green]}    - Generate MariaDB create script.${colors[Color_Off]}"
+    echo "${CREATE_MARIADB} -n bookstack -u bookstack -s ${VAULT_BASE} -d homecloud_mariadb" >> "${CREATE_DATABASES}"
 fi
 chmod +x "${CREATE_DATABASES}"
 
@@ -269,6 +270,25 @@ TALK_INTERNAL_SECRET=$(cat "${VAULT_BASE}/talk_internal_secret.txt")
 if [ "${TALK_SERVER_ENABLED}" == "yes" ]; then
     echo -e "${colors[Green]}  Talk setup${colors[Color_Off]}"
     ${TEMPLATER} "${HOMECLOUD_REPOS_PATH}/docker/talk.yml" >> "${DOCKER_COMPOSE_ENV_YML}"
+fi
+
+# Boostack
+BOOKSTACK_CERT_PATH=/certs/${BOOKSTACK_CERT_FILE:=fullchain.pem}
+BOOKSTACK_PRIVATE_KEY_PATH=/certs/${BOOKSTACK_PRIVATE_KEY_FILE:=private.pem}
+BOOKSTACK_CONFIG_FOLDERS=("bookstack" "bookstack/config")
+BOOKSTACK_CONFIG_PATH="${APPS_BASE}/bookstack/config"
+BOOKSTACK_APP_URL="https://${BOOKSTACK_SERVER_NAME}"
+if [ "${BOOKSTACK_ENABLED}" == "yes" ]; then
+    echo -e "${colors[Green]}  bookstack setup${colors[Color_Off]}"
+    create_subfolders ${APPS_BASE} ${BOOKSTACK_CONFIG_FOLDERS}
+    create_subfolders ${DATA_BASE} ${BOOKSTACK_CONFIG_FOLDERS}
+    ${TEMPLATER} "${HOMECLOUD_REPOS_PATH}/conf/lb/conf.d/05-bookstack.conf" > "${APPS_BASE}/lb/conf.d/05-bookstack.conf"
+    echo -e "${colors[Green]} Generating bookstack docker config${colors[Color_Off]}"
+    ${TEMPLATER} "${HOMECLOUD_REPOS_PATH}/docker/bookstack.yml" >> "${DOCKER_COMPOSE_ENV_YML}"
+else
+    if [ -f "${APPS_BASE}/lb/conf.d/05-bookstack.conf" ]; then
+        rm -f "${APPS_BASE}/lb/conf.d/05-bookstack.conf"
+    fi
 fi
 
 # Verify and generate new secrets

@@ -1,0 +1,6 @@
+{{SERVICES_PLACEHOLDER}}
+  bookstack:
+    environment:
+      APP_URL: {{BOOKSTACK_APP_URL}}
+    volumes:
+      -  {{BOOKSTACK_CONFIG_PATH}}:/config
