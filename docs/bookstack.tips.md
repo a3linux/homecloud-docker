@@ -1,6 +1,11 @@
 Boostack Tips
 =========================
 
+* Bookstack SSO/SAML with Authentik
+
+There is a file _etc/dotenv_of_bookstack_ as reference.
+The complete _.env_ sample is [here](https://github.com/BookStackApp/BookStack/blob/development/.env.example.complete).
+
 * How to hide sidebar content for vistor? 
 
 This is from the [Github issue](https://github.com/BookStackApp/BookStack/issues/1291)

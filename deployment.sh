@@ -101,7 +101,7 @@ if [ -x "${CREATE_POSTGRES}" ]; then
     echo "${CREATE_POSTGRES} -n authentik -u authentik -s ${VAULT_BASE} -d homecloud_postgres" >> "${CREATE_DATABASES}"
     echo "${CREATE_POSTGRES} -n nextcloud -u nextcloud -s ${VAULT_BASE} -d homecloud_postgres" >> "${CREATE_DATABASES}"
 fi
-# MariaDB(not used yet)
+# MariaDB
 if [ -x "${CREATE_MARIADB}" ]; then
     echo -e "${colors[Green]}    - Generate MariaDB create script.${colors[Color_Off]}"
     echo "${CREATE_MARIADB} -n bookstack -u bookstack -s ${VAULT_BASE} -d homecloud_mariadb" >> "${CREATE_DATABASES}"
