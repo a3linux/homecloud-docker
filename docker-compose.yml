@@ -116,7 +116,7 @@ services:
   authentikapp:
     container_name: homecloud_authentikapp
     profiles: ["coreservices"]
-    image: ghcr.io/goauthentik/server:2023.10101010101010101010
+    image: ghcr.io/goauthentik/server:2023.10
     restart: unless-stopped
     command: server
     ports:
