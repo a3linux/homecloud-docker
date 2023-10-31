@@ -116,7 +116,7 @@ services:
   authentikapp:
     container_name: homecloud_authentikapp
     profiles: ["coreservices"]
-    image: ghcr.io/goauthentik/server:2023.8
+    image: ghcr.io/goauthentik/server:2023.10101010101010101010
     restart: unless-stopped
     command: server
     ports:
@@ -149,7 +149,7 @@ services:
   authentikworker:
     container_name: homecloud_authentikworker
     profiles: ["coreservices"]
-    image: ghcr.io/goauthentik/server:2023.8
+    image: ghcr.io/goauthentik/server:2023.10
     restart: unless-stopped
     command: worker
     secrets:
@@ -293,7 +293,7 @@ services:
   imaginary:
     container_name: homecloud_imaginary
     profiles: ["coreservices"]
-    image: nextcloud/aio-imaginary:beta
+    image: nextcloud/aio-imaginary:latest
     restart: unless-stopped
     expose:
       - 9000
