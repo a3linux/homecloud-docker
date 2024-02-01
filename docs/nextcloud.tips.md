@@ -94,3 +94,9 @@ docker exec -it -u www-data homecloud_nextcloudapp php /var/www/html/occ config:
 
 Verified. This does NOT work for AppData.
 There is a PR working on for relocate NextCloud AppData in the release 26 RC2. https://github.com/nextcloud/server/pull/36337/files
+
+Q: When run the php occ commands, see this error, An unhandled exception has been thrown:
+OCP\AutoloadNotAllowedException: Autoload path not allowed: /var/www/html/apps/files_external/lib/service/globalstoragesservice.php in /var/www/html/lib/autoloader.php:141
+Stack trace:
+
+This is because of the "External storage support" app is not enabled. Please go to Administrator console -> Apps, Try to enable that app and then run the php occ commands again.
