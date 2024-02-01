@@ -12,8 +12,8 @@ services:
     profiles: ["coreservices"]
     image: traefik/whoami
     restart: unless-stopped
-    ports:
-      - 9888:80
+    expose:
+      - 80
     deploy:
       resources:
         limits:
@@ -54,8 +54,8 @@ services:
           memory: 512M
         reservations:
           memory: 128M
-    ports:
-      - 3306:3306
+    expose:
+      - 3306
     secrets:
       - mariadb_root_password
     environment:
@@ -77,8 +77,8 @@ services:
       - postgres_psql_password
     environment:
       POSTGRES_PASSWORD_FILE: /run/secrets/postgres_psql_password
-    ports:
-      - 5432:5432
+    expose:
+      - 5432
     deploy:
       resources:
         limits:
@@ -98,8 +98,8 @@ services:
     image: redis
     command: redis-server --save 300 1 --loglevel warning #--requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
     restart: unless-stopped
-    ports:
-      - 6379:6379
+    expose:
+      - 6379
     healthcheck:
       test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
       start_period: 30s
@@ -119,9 +119,9 @@ services:
     image: ghcr.io/goauthentik/server:2023.10
     restart: unless-stopped
     command: server
-    ports:
-      - 9000:9000
-      - 9443:9443
+    expose:
+      - 9000
+      - 9443
     secrets:
       - postgres_authentik_password
       - authentik_secret_key
@@ -188,7 +188,7 @@ services:
   nextcloudapp:
     container_name: homecloud_nextcloudapp
     profiles: ["coreservices"]
-    image: nextcloud:27-fpm-alpine
+    image: nextcloud:28-fpm-alpine
     restart: unless-stopped
     healthcheck:
       test: nc -z postgres 5432 || nc -z 127.0.0.1 9000 || exit 1
@@ -241,7 +241,7 @@ services:
   nextcloudcron:
     container_name: homecloud_nextcloudcron
     profiles: ["coreservices"]
-    image: nextcloud:27-fpm-alpine
+    image: nextcloud:28-fpm-alpine
     restart: unless-stopped
     entrypoint: /cron.sh
     depends_on:
@@ -327,14 +327,24 @@ services:
     container_name: homecloud_elasticsearch
     profiles: ["coreservices"]
     image: nextcloud/aio-fulltextsearch
+    init: false
     restart: unless-stopped
     expose:
       - 9200
+    secrets:
+      - elasticsearch_elastic_password
     environment:
       TZ: "Asia/Singapore"
+      cluster.name: homecloud
       discovery.type: single-node
+      http.port: 9200
       ES_JAVA_OPTS: -Xms1024M -Xmx1024M
-      POSTGRES_HOST: postgres
+      logger.org.elasticsearch.discovery: WARN
+      bootstrap.memory_lock: true
+      xpack.license.self_generated.type: basic
+      xpack.security.enabled: true
+      xpack.security.audit.enabled: true
+      ELASTIC_PASSWORD_FILE: /run/secrets/elasticsearch_elastic_password
     deploy:
       resources:
         limits:
@@ -351,8 +361,6 @@ services:
     restart: unless-stopped
     secrets:
       - calibreweb_admin_password
-    ports:
-      - 8083:8083
     expose:
       - 8083
     environment:
@@ -372,8 +380,8 @@ services:
     healthcheck:
       test: curl --fail http://localhost:8096/ || exit 1
     restart: unless-stopped
-    ports:
-      - 8096:8096
+    expose:
+      - 8096
     environment:
       TZ: "Asia/Singapore"
     deploy:
@@ -398,8 +406,8 @@ services:
       DB_USER: bookstack
       DB_DATABASE: bookstack
       FILE__DB_PASS: /run/secrets/mariadb_bookstack_password
-    ports:
-      - 6875:80
+    expose:
+      - 80
     depends_on:
       - mariadb
     deploy:
