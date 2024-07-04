@@ -30,6 +30,7 @@ talk_turn_secret.txt
 talk_signaling_secret.txt
 talk_internal_secret.txt
 bookstack_admin_password.txt
+elasticsearch_elastic_password.txt
 "
 
 usage() {
@@ -72,6 +73,7 @@ for sf in ${SECRETS_FILES}
 do
     if [ ! -f "${VAULT_BASE_PATH}"/"${sf}" ]; then
         "${MYSELF_PATH}"/gen_passwd.sh 50 > "${VAULT_BASE_PATH}"/"${sf}"
+        chmod 600 "${VAULT_BASE_PATH}"/"${sf}"
     fi
 done
 
