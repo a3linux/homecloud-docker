@@ -188,7 +188,7 @@ services:
   nextcloudapp:
     container_name: homecloud_nextcloudapp
     profiles: ["coreservices"]
-    image: nextcloud:29-fpm-alpine
+    image: nextcloud:30-fpm-alpine
     restart: unless-stopped
     healthcheck:
       test: nc -z postgres 5432 || nc -z 127.0.0.1 9000 || exit 1
@@ -241,7 +241,7 @@ services:
   nextcloudcron:
     container_name: homecloud_nextcloudcron
     profiles: ["coreservices"]
-    image: nextcloud:29-fpm-alpine
+    image: nextcloud:30-fpm-alpine
     restart: unless-stopped
     entrypoint: /cron.sh
     depends_on:
