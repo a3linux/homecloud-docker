@@ -112,6 +112,10 @@ if [ -n "${EXTRA_COMPOSE_FILE}" ]; then
     PROFILES=" -f ${SERVICE_DESTINATION}/${EXTRA_COMPOSE_FILE} ${PROFILES}"
 fi
 
+if [ "${SYSLOG_ENABLED}" == "yes" ]; then
+    PROFILES=" -f ${SERVICE_DESTINATION}/${SYSLOG_COMPOSE_FILE} ${PROFILES}"
+fi
+
 DOCKER_CMD=$(which docker||true)
 DOCKER_COMPOSE_CMD=$(which docker-compose||true)
 EXECUTOR_CMD=""

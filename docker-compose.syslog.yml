@@ -1,0 +1,66 @@
+services:
+  lb:
+    logging:
+      driver: syslog
+      options:
+        tag: homecloud_lb
+
+  mariadb:
+    logging:
+      driver: syslog
+      options:
+        tag: homecloud_mariadb
+
+  postgres:
+    logging:
+      driver: syslog
+      options:
+        tag: homecloud_postgres
+
+  redis:
+    logging:
+      driver: syslog
+      options:
+        tag: homecloud_redis
+
+  authentikapp:
+    logging:
+      driver: syslog
+      options:
+        tag: homecloud_authentikapp
+
+  authentikworker:
+    logging:
+      driver: syslog
+      options:
+        tag: homecloud_authentikworker
+
+  nextcloudapp:
+    logging:
+      driver: syslog
+      options:
+        tag: homecloud_nextcloudapp
+
+  nextcloudweb:
+    logging:
+      driver: syslog
+      options:
+        tag: homecloud_nextcloudweb
+
+  nextcloudcron:
+    logging:
+      driver: syslog
+      options:
+        tag: homecloud_nextcloudcron
+
+  imaginary:
+    logging:
+      driver: syslog
+      options:
+        tag: homecloud_imaginary
+
+  elasticsearch:
+    logging:
+      driver: syslog
+      options:
+        tag: homecloud_elasticsearch
