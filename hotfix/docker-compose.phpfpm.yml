@@ -1,0 +1,8 @@
+  phpfpm:
+    container_name: homecloud_phpfpm
+    profiles: ["coreservices"]
+    image: 'bitnami/php-fpm:latest'
+    expose:
+      - 9000
+    volumes:
+      - <path-to-nginx-webroot>:/app
